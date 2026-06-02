@@ -50,6 +50,21 @@ void setup()
 
   acquerir();
 
+  // Initialisation afficheur Oled 128 x 32
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+  {
+    Serial.println(F("SSD1306 erreur d'allocation "));
+    for (;;);
+  }
+  else
+  {
+    Serial.println(F(" display detecté"));//
+  }
+  display.clearDisplay();
+  display.display();
+
+
+
   TimerTempoMesure.Init(NULL, 5000);
   TimerTempoMesure.Start();
 
@@ -102,6 +117,15 @@ void acquerir_afficher()
   Serial.print(moncapteur.getTemperature());
   Serial.print(F(" oC "));
   Serial.println("");
+
+  display.clearDisplay();
+  display.setTextSize(4);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.print(taux_string);
+  display.print("%");
+  display.display();
+
 
 }
 
