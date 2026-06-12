@@ -62,6 +62,11 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.8.6/variants/eightanaloginputs</locationURI>
 		</link>
 		<link>
+			<name>libraries/Adafruit_NeoPixel</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Adafruit_NeoPixel/1.15.1</locationURI>
+		</link>
+		<link>
 			<name>libraries/ArduinoJson</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoJson/7.4.1</locationURI>

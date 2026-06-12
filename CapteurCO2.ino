@@ -8,6 +8,18 @@
 #include "timer_sw.h"
 #include "trace_debug.h"
 
+#include "gestion_Led_WS.h"
+
+#include <Adafruit_NeoPixel.h>
+
+#define PIN_WS2812B  4   // ESP32 pin that connects to WS2812B
+#define NUM_PIXELS     1  // The number of LEDs (pixels) on WS2812B
+
+Adafruit_NeoPixel LEDWS2812(NUM_PIXELS, PIN_WS2812B, NEO_RGB + NEO_KHZ800);
+
+GestionLed_t * MultiLED;
+
+
 // variables taux de CO2
 unsigned int taux_co2; // sortie du capteur  en ppm
 float taux_pourcent; // taux de CO2 en % en type float
@@ -21,6 +33,9 @@ Adafruit_SSD1306 display(128,32, &Wire,-1 );//-1 pour signifier qu'aucune  des b
 
 TimerEvent_t TimerTempoMesure;
 
+
+
+
 ///////F: fonction SETUP//////////////////////////////////////////////////////////////////////////////////////////
 void setup()
 {
@@ -29,6 +44,8 @@ void setup()
 
   Init_Trace_Debug();
 
+  pinMode(13, OUTPUT);
+  digitalWrite(13, 1);
 
   SEND_VTRACE(INFO, "SCD41");
 
@@ -61,13 +78,27 @@ void setup()
     Serial.println(F(" display detecté"));//
   }
   display.clearDisplay();
+
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.print("CapteurCO2");
+
+  display.setCursor(0,20);
+  display.setTextSize(1);
+  display.print("Initialisation...");
+
   display.display();
-
-
 
   TimerTempoMesure.Init(NULL, 5000);
   TimerTempoMesure.Start();
 
+
+  MultiLED = new GestionLed_t(NUM_PIXELS, PIN_WS2812B);
+
+
+//  LEDWS2812.begin();
+//  LEDWS2812.clear();
 
 }
 
@@ -76,7 +107,25 @@ void loop()
 {
   if(TimerTempoMesure.IsTop() == true)
   {
+    MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Red, true);
+
+//    LEDWS2812.setPixelColor(0, HTMLColorCode::Red);
+//    LEDWS2812.show();
+
+
+    digitalWrite(13, 1);
+
     acquerir_afficher();
+    delay(100);
+    digitalWrite(13, 0);
+
+
+    MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Green, true);
+
+//    LEDWS2812.setPixelColor(0, HTMLColorCode::Green);
+//    LEDWS2812.show();
+
+
   }
 
 }
