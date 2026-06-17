@@ -166,10 +166,10 @@ typedef enum {
 } HTMLColorCode;
 
 
-class GestionLed_t
+class GestionLedWS_t
 {
 public:
-  GestionLed_t(uint16_t p_u16_NbreLed, int16_t p_i16_NumPatte);
+  GestionLedWS_t(uint16_t p_u16_NbreLed, int16_t p_i16_NumPatte);
   bool Nouvelle_Valeur(uint16_t p_u16_numLed, HTMLColorCode p_t_Valeur, bool p_b_Actualiser = true);
   void Actualiser_Bandeau(void);
 

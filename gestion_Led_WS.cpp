@@ -8,7 +8,7 @@
 #include "gestion_Led_WS.h"
 
 
-GestionLed_t::GestionLed_t(uint16_t p_u8_NbreLed, int16_t p_i16_NumPatte)
+GestionLedWS_t::GestionLedWS_t(uint16_t p_u8_NbreLed, int16_t p_i16_NumPatte)
 {
   if(m_pt_NeoPixel != nullptr)
   {
@@ -24,7 +24,7 @@ GestionLed_t::GestionLed_t(uint16_t p_u8_NbreLed, int16_t p_i16_NumPatte)
 
 }
 
-bool GestionLed_t::Nouvelle_Valeur(uint16_t p_u16_numLed, HTMLColorCode p_t_Valeur, bool p_b_Actualiser)
+bool GestionLedWS_t::Nouvelle_Valeur(uint16_t p_u16_numLed, HTMLColorCode p_t_Valeur, bool p_b_Actualiser)
 {
   if(p_u16_numLed >= m_u16_NbreLed)
   {
@@ -42,7 +42,7 @@ bool GestionLed_t::Nouvelle_Valeur(uint16_t p_u16_numLed, HTMLColorCode p_t_Vale
 
 }
 
-void GestionLed_t::Actualiser_Bandeau()
+void GestionLedWS_t::Actualiser_Bandeau()
 {
   m_pt_NeoPixel->show();
 }
