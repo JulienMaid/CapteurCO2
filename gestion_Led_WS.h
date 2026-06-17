@@ -170,8 +170,11 @@ class GestionLedWS_t
 {
 public:
   GestionLedWS_t(uint16_t p_u16_NbreLed, int16_t p_i16_NumPatte);
-  bool Nouvelle_Valeur(uint16_t p_u16_numLed, HTMLColorCode p_t_Valeur, bool p_b_Actualiser = true);
+  bool Nouvelle_Valeur(uint16_t p_u16_numLed, uint32_t p_u32_Valeur, bool p_b_Actualiser = true);
   void Actualiser_Bandeau(void);
+
+  void ReglerLuminosite(uint8_t p_u8_Luminosite);
+
 
 protected:
   Adafruit_NeoPixel * m_pt_NeoPixel = nullptr;

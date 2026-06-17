@@ -107,9 +107,12 @@ void setup()
 
   MultiLED = new GestionLedWS_t(NUM_PIXELS, PIN_WS2812B);
 
-  LedWS = new GestionClignotementLedWS(0, MultiLED);
+//  MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Green, true);
 
-  LedWS->SetSequence1();
+  LedWS = new GestionClignotementLedWS(0, MultiLED, 50);
+
+  LedWS->SetSequence4();
+  LedWS->ReglerLuminosite(255);
 
 
 //  LEDWS2812.begin();

@@ -24,19 +24,21 @@ GestionLedWS_t::GestionLedWS_t(uint16_t p_u8_NbreLed, int16_t p_i16_NumPatte)
 
 }
 
-bool GestionLedWS_t::Nouvelle_Valeur(uint16_t p_u16_numLed, HTMLColorCode p_t_Valeur, bool p_b_Actualiser)
+bool GestionLedWS_t::Nouvelle_Valeur(uint16_t p_u16_numLed, uint32_t p_u32_Valeur, bool p_b_Actualiser)
 {
   if(p_u16_numLed >= m_u16_NbreLed)
   {
     return false;
   }
 
-  m_pt_NeoPixel->setPixelColor(p_u16_numLed, p_t_Valeur);
+  m_pt_NeoPixel->setPixelColor(p_u16_numLed, p_u32_Valeur);
 
-  if(1)//if(p_b_Actualiser == true)
+  if(1)//(p_b_Actualiser == true)
   {
     m_pt_NeoPixel->show();
   }
+
+
 
   return true;
 
@@ -46,3 +48,9 @@ void GestionLedWS_t::Actualiser_Bandeau()
 {
   m_pt_NeoPixel->show();
 }
+
+void GestionLedWS_t::ReglerLuminosite(uint8_t p_u8_Luminosite)
+{
+  m_pt_NeoPixel->setBrightness(p_u8_Luminosite);
+}
+

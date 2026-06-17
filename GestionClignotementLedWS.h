@@ -19,7 +19,9 @@ public:
       uint8_t p_u8_SequenceLength = 20);
   virtual ~GestionClignotementLedWS();
   //! Retourne la valeur courante de la séquence d'allumage
-  virtual HTMLColorCode GetSequence(void);
+  virtual uint32_t GetSequence(void);
+
+  virtual void ReglerLuminosite(uint8_t p_u8_Luminosite);
 
   //! Active la séquence d'extinction (chaque valeur de la séquence est 0)
   virtual void ClearSequence(void);
@@ -44,7 +46,7 @@ protected:
   uint8_t m_u8_SequenceLength;
   uint8_t m_u8_SequenceIndex;
 
-  HTMLColorCode *m_ptu32_LedSequence;
+  uint8_t *m_ptu8_LedSequence;
 
   GestionLedWS_t *m_pt_GestionLedWS;
 
