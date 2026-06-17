@@ -5,19 +5,25 @@
 #include <Adafruit_GFX.h> // pour les graphiques
 #include <Adafruit_SSD1306.h> // pour le circuit de commande de l'afficheur
 #include <MsTimer2.h>
+#include <Adafruit_NeoPixel.h>
 #include "timer_sw.h"
 #include "trace_debug.h"
 
+#include "DefinitionES.h"
+
 #include "gestion_Led_WS.h"
 
-#include <Adafruit_NeoPixel.h>
+#include "convertAnalogValue.h"
+#include "GestionClignotementLedWS.h"
+
+
 
 #define PIN_WS2812B  4   // ESP32 pin that connects to WS2812B
 #define NUM_PIXELS     1  // The number of LEDs (pixels) on WS2812B
 
 Adafruit_NeoPixel LEDWS2812(NUM_PIXELS, PIN_WS2812B, NEO_RGB + NEO_KHZ800);
 
-GestionLed_t * MultiLED;
+GestionLedWS_t * MultiLED;
 
 
 // variables taux de CO2
@@ -33,8 +39,11 @@ Adafruit_SSD1306 display(128,32, &Wire,-1 );//-1 pour signifier qu'aucune  des b
 
 TimerEvent_t TimerTempoMesure;
 
+ConvertAnalogValue TensionBatterie(0, 0, 0.0, 10.0, 0, 1023);
 
+//GestionClignotementLed LedInterne(13);
 
+GestionClignotementLedWS * LedWS;
 
 ///////F: fonction SETUP//////////////////////////////////////////////////////////////////////////////////////////
 void setup()
@@ -44,11 +53,13 @@ void setup()
 
   Init_Trace_Debug();
 
-  pinMode(13, OUTPUT);
-  digitalWrite(13, 1);
+//  pinMode(13, OUTPUT);
+//  digitalWrite(13, 1);
+
+
+//  LedInterne.SetSequence3();
 
   SEND_VTRACE(INFO, "SCD41");
-
 
   Wire.begin();// initialisation de la liaison I2C
 
@@ -94,11 +105,17 @@ void setup()
   TimerTempoMesure.Start();
 
 
-  MultiLED = new GestionLed_t(NUM_PIXELS, PIN_WS2812B);
+  MultiLED = new GestionLedWS_t(NUM_PIXELS, PIN_WS2812B);
+
+  LedWS = new GestionClignotementLedWS(0, MultiLED);
+
+  LedWS->SetSequence1();
 
 
 //  LEDWS2812.begin();
 //  LEDWS2812.clear();
+
+  while(1);
 
 }
 
