@@ -16,6 +16,7 @@
 #include "convertAnalogValue.h"
 #include "GestionClignotementLedWS.h"
 
+#include "tools.h"
 
 
 #define PIN_WS2812B  4   // ESP32 pin that connects to WS2812B
@@ -28,7 +29,7 @@ GestionLedWS_t * MultiLED;
 
 // variables taux de CO2
 unsigned int taux_co2; // sortie du capteur  en ppm
-float taux_pourcent; // taux de CO2 en % en type float
+float taux_pourcent = 0.0; // taux de CO2 en % en type float
 char taux_string[4];// taux de CO2 en type string pour l'afficheur
 
 // définition objet moncapteur
@@ -106,20 +107,9 @@ void setup()
 
 
   MultiLED = new GestionLedWS_t(NUM_PIXELS, PIN_WS2812B);
-
-//  MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Green, true);
-
   LedWS = new GestionClignotementLedWS(0, MultiLED, 50);
-
-  LedWS->SetSequence4();
-  LedWS->ReglerLuminosite(255);
-
-
-//  LEDWS2812.begin();
-//  LEDWS2812.clear();
-
-  while(1);
-
+  LedWS->ReglerLuminosite(64);
+  LedWS->Demarre();
 }
 
 ///////F: fonction PRINCIPALE//////////////////////////////////////////////////////////////////////////////////////
@@ -127,11 +117,7 @@ void loop()
 {
   if(TimerTempoMesure.IsTop() == true)
   {
-    MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Red, true);
-
-//    LEDWS2812.setPixelColor(0, HTMLColorCode::Red);
-//    LEDWS2812.show();
-
+//    MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Red, true);
 
     digitalWrite(13, 1);
 
@@ -139,12 +125,7 @@ void loop()
     delay(100);
     digitalWrite(13, 0);
 
-
-    MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Green, true);
-
-//    LEDWS2812.setPixelColor(0, HTMLColorCode::Green);
-//    LEDWS2812.show();
-
+//    MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Green, true);
 
   }
 
@@ -162,39 +143,69 @@ void acquerir()
 ///////F:fonction faire la mesure, l'afficher  //////////////////////////////////////////////
 void acquerir_afficher()
 {
+  qualite_air_t l_e_Qualite_Air;
 
   // acquerir taux de CO2
   taux_co2=(int)moncapteur.getCO2();
   taux_pourcent=(float)taux_co2 /10000;
-  if (taux_pourcent<10000)dtostrf(taux_pourcent,4,2,taux_string);
-  else dtostrf(taux_pourcent,4,1,taux_string);
+  dtostrf(taux_pourcent,4,2,taux_string);
 
-  Serial.println("");
-  Serial.print(F("taux de CO2 en ppm : "));
-  Serial.print(taux_co2);
-  Serial.print(F(" PPM "));
-  Serial.print("   en % : " );
-  Serial.print(taux_pourcent,1);
-  Serial.print(F(" % "));
-  Serial.println("");
-  Serial.print("taux d'humidité en %H : ");
-  Serial.print(moncapteur.getHumidity(), 1);
-  Serial.print("%H");
-  Serial.println("");
+//  taux_pourcent += 0.05;
+//  dtostrf(taux_pourcent,4,2,taux_string);
 
-  Serial.print(F("temoerature : "));
-  Serial.print(moncapteur.getTemperature());
-  Serial.print(F(" oC "));
-  Serial.println("");
+//  Serial.println("");
+//  Serial.print(F("taux de CO2 en ppm : "));
+//  Serial.print(taux_co2);
+//  Serial.print(F(" PPM "));
+//  Serial.print("   en % : " );
+//  Serial.print(taux_pourcent,1);
+//  Serial.print(F(" % "));
+//  Serial.println("");
+//  Serial.print("taux d'humidité en %H : ");
+//  Serial.print(moncapteur.getHumidity(), 1);
+//  Serial.print("%H");
+//  Serial.println("");
+//
+//  Serial.print(F("temoerature : "));
+//  Serial.print(moncapteur.getTemperature());
+//  Serial.print(F(" oC "));
+//  Serial.println("");
 
   display.clearDisplay();
-  display.setTextSize(4);
+  display.setTextSize(3);
   display.setTextColor(WHITE);
   display.setCursor(0,0);
   display.print(taux_string);
   display.print("%");
+  display.setTextSize(2);
+  display.print("co2");
   display.display();
 
+  l_e_Qualite_Air = Determiner_Qualite_Air(taux_pourcent);
+
+  switch(l_e_Qualite_Air)
+  {
+  case Acceptable:
+    LedWS->SetSequence(1);
+    break;
+
+  case Mediocre:
+    LedWS->SetSequence(2);
+    break;
+
+  case Mauvaise:
+    LedWS->SetSequence(3);
+    break;
+
+  case Tres_Mauvaise:
+    LedWS->SetSequence(4);
+    break;
+
+  case Danger:
+    LedWS->SetSequence(5);
+    break;
+
+  }
 
 }
 
