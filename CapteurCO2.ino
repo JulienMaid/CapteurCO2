@@ -14,6 +14,7 @@
 #include "gestion_Led_WS.h"
 
 #include "convertAnalogValue.h"
+#include "GestionClignotementLed.h"
 #include "GestionClignotementLedWS.h"
 
 #include "tools.h"

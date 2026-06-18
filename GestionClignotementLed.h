@@ -30,20 +30,15 @@ public:
   //! Retourne le numéro du port Led
   uint32_t GetPortLed(void);
 
+  virtual void Demarre(void);
+
+  virtual void Arreter(void);
+
   //! Active la séquence d'extinction (chaque valeur de la séquence est 0)
   virtual void ClearSequence(void);
 
-  //! Active la séquence n°1
-  virtual void SetSequence1(void);
-
-  //! Active la séquence n°1
-  virtual void SetSequence2(void);
-
-  //! Active la séquence n°1
-  virtual void SetSequence3(void);
-
-  //! Active la séquence n°1
-  virtual void SetSequence4(void);
+  //! Active la séquence n°x
+  virtual void SetSequence(uint8_t p_u8_NumeroSequence);
 
   //! methode statique utilisée par le timer logiciel dans le fonctionnement autonome
   static void StaticGetSequence(uint32_t arg1, void *ClassGestionLed);

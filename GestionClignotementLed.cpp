@@ -17,11 +17,12 @@ GestionClignotementLed::GestionClignotementLed(uint32_t p_u32_PortLed, bool p_b_
   m_ptu8_LedSequence = new uint8_t[m_u8_SequenceLength];
   ClearSequence();
 
+  pinMode(m_u32_PortLed, OUTPUT);
+
+  m_t_TimerLed.Init(StaticGetSequence, 100, true, this);
+
   if (p_b_AutonomousOperation == true)
   {
-    pinMode(m_u32_PortLed, OUTPUT);
-
-    m_t_TimerLed.Init(StaticGetSequence, 100, true, this);
     m_t_TimerLed.Start();
   }
 }
@@ -35,39 +36,6 @@ GestionClignotementLed::~GestionClignotementLed()
 void GestionClignotementLed::ClearSequence(void)
 {
   memset(m_ptu8_LedSequence, 0, m_u8_SequenceLength);
-}
-
-void GestionClignotementLed::SetSequence1(void)
-{
-  uint8_t l_tu8_LedSequence[m_u8_SequenceLength] = { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0,
-      0, 0, 0, 0 };
-
-  memcpy(m_ptu8_LedSequence, l_tu8_LedSequence, m_u8_SequenceLength);
-}
-
-void GestionClignotementLed::SetSequence2(void)
-{
-  uint8_t l_tu8_LedSequence[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0 };
-
-  memcpy(m_ptu8_LedSequence, l_tu8_LedSequence, m_u8_SequenceLength);
-
-}
-
-void GestionClignotementLed::SetSequence3(void)
-{
-  uint8_t l_tu8_LedSequence[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0 };
-
-  memcpy(m_ptu8_LedSequence, l_tu8_LedSequence, m_u8_SequenceLength);
-}
-
-void GestionClignotementLed::SetSequence4(void)
-{
-  uint8_t l_tu8_LedSequence[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0,
-      0, 0, 0, 0 };
-
-  memcpy(m_ptu8_LedSequence, l_tu8_LedSequence, m_u8_SequenceLength);
 }
 
 uint8_t GestionClignotementLed::GetSequence(void)
@@ -97,9 +65,58 @@ uint32_t GestionClignotementLed::GetPortLed(void)
   return m_u32_PortLed;
 }
 
+void GestionClignotementLed::SetSequence(uint8_t p_u8_NumeroSequence)
+{
+    const uint8_t l_tu8_LedSequenceDef[m_u8_SequenceLength] = { 0 };
+    const uint8_t l_tu8_LedSequence1[m_u8_SequenceLength] = { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0,
+        0, 0, 0, 0 };
+    const uint8_t l_tu8_LedSequence2[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0 };
+    const uint8_t l_tu8_LedSequence3[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0 };
+    const uint8_t l_tu8_LedSequence4[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+        0, 0, 0, 0 };
+
+    uint8_t * l_ptu8_LedSequenceX = nullptr;
+
+  m_u8_SequenceIndex = 0;
+
+  switch(p_u8_NumeroSequence)
+  {
+  case 1:
+    l_ptu8_LedSequenceX = l_tu8_LedSequence1;
+    break;
+  case 2:
+    l_ptu8_LedSequenceX = l_tu8_LedSequence2;
+    break;
+  case 3:
+    l_ptu8_LedSequenceX = l_tu8_LedSequence3;
+    break;
+  case 4:
+    l_ptu8_LedSequenceX = l_tu8_LedSequence4;
+    break;
+  default:
+    l_ptu8_LedSequenceX = l_tu8_LedSequenceDef;
+    break;
+  }
+
+  memcpy(m_ptu8_LedSequence, l_ptu8_LedSequenceX, m_u8_SequenceLength);
+
+}
+
 void GestionClignotementLed::StaticGetSequence(uint32_t arg1, void *ClassGestionLed)
 {
   GestionClignotementLed *l_t_GestionLED = (GestionClignotementLed*) ClassGestionLed;
 
   digitalWrite(l_t_GestionLED->GetPortLed(), l_t_GestionLED->GetSequence());
+}
+
+void GestionClignotementLed::Demarre(void)
+{
+  m_t_TimerLed.Start();
+}
+
+void GestionClignotementLed::Arreter(void)
+{
+  m_t_TimerLed.Stop();
 }
