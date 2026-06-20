@@ -7,7 +7,6 @@
 #include <MsTimer2.h>
 #include <Adafruit_NeoPixel.h>
 #include "timer_sw.h"
-#include "trace_debug.h"
 
 #include "DefinitionES.h"
 
@@ -15,6 +14,7 @@
 
 #include "convertAnalogValue.h"
 #include "GestionClignotementLed.h"
+#include "GestionSonBuzzer.h"
 #include "GestionClignotementLedWS.h"
 
 #include "tools.h"
@@ -23,9 +23,9 @@
 #define PIN_WS2812B  4   // ESP32 pin that connects to WS2812B
 #define NUM_PIXELS     1  // The number of LEDs (pixels) on WS2812B
 
-Adafruit_NeoPixel LEDWS2812(NUM_PIXELS, PIN_WS2812B, NEO_RGB + NEO_KHZ800);
+Adafruit_NeoPixel g_t_LedWS2812(NUM_PIXELS, PIN_WS2812B, NEO_RGB + NEO_KHZ800);
 
-GestionLedWS_t * MultiLED;
+GestionLedWS_t * g_t_GestionMultiLedWS;
 
 
 // variables taux de CO2
@@ -34,18 +34,23 @@ float taux_pourcent = 0.0; // taux de CO2 en % en type float
 char taux_string[4];// taux de CO2 en type string pour l'afficheur
 
 // définition objet moncapteur
-SCD4x moncapteur(0x62);// 0x62 adresse I2C du capteur
+SCD4x g_t_CapteurSCD41(SCD4x_SENSOR_SCD41);
 // configuration afficheur OLED
-Adafruit_SSD1306 display(128,32, &Wire,-1 );//-1 pour signifier qu'aucune  des broches
+Adafruit_SSD1306 g_t_EcranLCD(128,32, &Wire,-1 );//-1 pour signifier qu'aucune  des broches
 // n'est utilisée pour initialiser l'affichage
 
-TimerEvent_t TimerTempoMesure;
+TimerEvent_t g_t_TimerTempoMesure;
+TimerEvent_t g_t_TimerGestionBP;
+
 
 ConvertAnalogValue TensionBatterie(0, 0, 0.0, 10.0, 0, 1023);
 
-//GestionClignotementLed LedInterne(13);
+GestionClignotementLed g_t_LedInterne(0);
+GestionSonBuzzer g_t_GestionBuzzer(0);
 
 GestionClignotementLedWS * LedWS;
+
+void GestionTimningBP(uint32_t p_u32_arg, void* p_v_arg);
 
 ///////F: fonction SETUP//////////////////////////////////////////////////////////////////////////////////////////
 void setup()
@@ -53,35 +58,18 @@ void setup()
   MsTimer2 :: set (DEC_TIMESTAMP, Inc_Timer); //execution de la routine "alarme_cligno" toutes les 100ms
   MsTimer2:: start();
 
-  Init_Trace_Debug();
+//  Init_Trace_Debug();
+  g_t_TimerGestionBP.Init(GestionTimningBP, 50, Periodic_Timer, &g_t_TimerGestionBP);
+//  g_t_TimerGestionBP.Start();
 
-//  pinMode(13, OUTPUT);
-//  digitalWrite(13, 1);
+  g_t_GestionMultiLedWS = new GestionLedWS_t(NUM_PIXELS, PIN_WS2812B);
 
-
-//  LedInterne.SetSequence3();
-
-  SEND_VTRACE(INFO, "SCD41");
+//  SEND_VTRACE(INFO, "SCD41");
 
   Wire.begin();// initialisation de la liaison I2C
 
-  // Initialisation capteur SCD41
-  moncapteur.begin();
-  // moncapteur.enableDebugging();  // message debug sur Serial
-  if (moncapteur.begin() == false)
-  {
-    SEND_VTRACE(INFO, "SCD41 non détecté");
-    for (;;);
-  }
-  else
-  {
-    SEND_VTRACE(INFO, "SCD41  détecté");
-  }
-
-  acquerir();
-
   // Initialisation afficheur Oled 128 x 32
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+  if (!g_t_EcranLCD.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
     Serial.println(F("SSD1306 erreur d'allocation "));
     for (;;);
@@ -90,25 +78,40 @@ void setup()
   {
     Serial.println(F(" display detecté"));//
   }
-  display.clearDisplay();
+  g_t_EcranLCD.clearDisplay();
 
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0,0);
-  display.print("CapteurCO2");
+  g_t_EcranLCD.setTextSize(2);
+  g_t_EcranLCD.setTextColor(WHITE);
+  g_t_EcranLCD.setCursor(0,0);
+  g_t_EcranLCD.print("CapteurCO2");
 
-  display.setCursor(0,20);
-  display.setTextSize(1);
-  display.print("Initialisation...");
+  g_t_EcranLCD.setCursor(0,20);
+  g_t_EcranLCD.setTextSize(1);
+  g_t_EcranLCD.print("Initialisation...");
 
-  display.display();
-
-  TimerTempoMesure.Init(NULL, 5000);
-  TimerTempoMesure.Start();
+  g_t_EcranLCD.display();
 
 
-  MultiLED = new GestionLedWS_t(NUM_PIXELS, PIN_WS2812B);
-  LedWS = new GestionClignotementLedWS(0, MultiLED, 50);
+  // Initialisation capteur SCD41
+  g_t_CapteurSCD41.begin();
+  // moncapteur.enableDebugging();  // message debug sur Serial
+  if (g_t_CapteurSCD41.begin() == false)
+  {
+//    SEND_VTRACE(INFO, "SCD41 non détecté");
+    for (;;);
+  }
+  else
+  {
+//    SEND_VTRACE(INFO, "SCD41  détecté");
+  }
+
+  acquerir();
+
+  g_t_TimerTempoMesure.Init(NULL, 5000);
+  g_t_TimerTempoMesure.Start();
+
+
+  LedWS = new GestionClignotementLedWS(0, g_t_GestionMultiLedWS, 50);
   LedWS->ReglerLuminosite(64);
   LedWS->Demarre();
 }
@@ -116,9 +119,10 @@ void setup()
 ///////F: fonction PRINCIPALE//////////////////////////////////////////////////////////////////////////////////////
 void loop()
 {
-  if(TimerTempoMesure.IsTop() == true)
+  uint16_t l_u16_TensionBatterieInt;
+
+  if(g_t_TimerTempoMesure.IsTop() == true)
   {
-//    MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Red, true);
 
     digitalWrite(13, 1);
 
@@ -126,19 +130,87 @@ void loop()
     delay(100);
     digitalWrite(13, 0);
 
-//    MultiLED->Nouvelle_Valeur(0, HTMLColorCode::Green, true);
+    l_u16_TensionBatterieInt = (uint16_t)(10.0*TensionBatterie.GetConvertedValue(analogRead(0)));
+
+    if(l_u16_TensionBatterieInt < 65)
+    {
+// Extinction immédiate
+    }
+    else if(l_u16_TensionBatterieInt < 74)
+    {
+// Batterie à 50%
+    }
+    else
+    {
+// Batterie pleine
+    }
 
   }
 
 }
 
+void GestionTimningBP(uint32_t p_u32_arg, void* p_v_arg)
+{
+  static uint32_t l_u32_TempsEcoule = 0;
+  static uint16_t l_u32_TempsAppuieBP = 0;
+  TimerEvent_t * l_pt_TimerGestionBP = (TimerEvent_t *)p_v_arg;
+
+
+  if(digitalRead(ENTREE_BP) == 1)
+  {
+    l_u32_TempsAppuieBP += l_pt_TimerGestionBP->GetValue();
+  }
+  else
+  {
+    if((l_u32_TempsAppuieBP > 100) && (l_u32_TempsAppuieBP < 500))
+    {
+      // Couper Alarme si ON
+
+      // Remettre 15 min de temps ON si mode normal
+    }
+
+
+    l_u32_TempsAppuieBP = 0;
+  }
+
+  if(l_u32_TempsEcoule < 2000)
+  {
+    if(l_u32_TempsAppuieBP > 1000)
+    {
+//ACTIVER MODE_ON
+    }
+
+
+  }
+  else
+  {
+    if(l_u32_TempsAppuieBP > 3000)
+    {
+//ACTIVER MODE OFF
+    }
+
+    if(l_u32_TempsEcoule > 900000)
+    {
+// Si Mode normal, extinction car allumé depuis 15min.
+
+    }
+    else if(l_u32_TempsEcoule > 840000)
+    {
+// Si Mode normal, alarme pour prévenir extinction prochain.
+
+    }
+
+  }
+
+  l_u32_TempsEcoule += l_pt_TimerGestionBP->GetValue();
+}
 
 ///////F:fonction faire la première mesure pour ne pas l'afficher car est à 0   /////////////////////////////////////
 void acquerir()
 {
-  moncapteur.getCO2();
-  moncapteur.getTemperature();
-  moncapteur.getHumidity();
+  g_t_CapteurSCD41.getCO2();
+  g_t_CapteurSCD41.getTemperature();
+  g_t_CapteurSCD41.getHumidity();
 }
 
 ///////F:fonction faire la mesure, l'afficher  //////////////////////////////////////////////
@@ -147,7 +219,7 @@ void acquerir_afficher()
   qualite_air_t l_e_Qualite_Air;
 
   // acquerir taux de CO2
-  taux_co2=(int)moncapteur.getCO2();
+  taux_co2=(int)g_t_CapteurSCD41.getCO2();
   taux_pourcent=(float)taux_co2 /10000;
   dtostrf(taux_pourcent,4,2,taux_string);
 
@@ -172,15 +244,15 @@ void acquerir_afficher()
 //  Serial.print(F(" oC "));
 //  Serial.println("");
 
-  display.clearDisplay();
-  display.setTextSize(3);
-  display.setTextColor(WHITE);
-  display.setCursor(0,0);
-  display.print(taux_string);
-  display.print("%");
-  display.setTextSize(2);
-  display.print("co2");
-  display.display();
+  g_t_EcranLCD.clearDisplay();
+  g_t_EcranLCD.setTextSize(3);
+  g_t_EcranLCD.setTextColor(WHITE);
+  g_t_EcranLCD.setCursor(0,0);
+  g_t_EcranLCD.print(taux_string);
+  g_t_EcranLCD.print("%");
+  g_t_EcranLCD.setTextSize(2);
+  g_t_EcranLCD.print("co2");
+  g_t_EcranLCD.display();
 
   l_e_Qualite_Air = Determiner_Qualite_Air(taux_pourcent);
 
