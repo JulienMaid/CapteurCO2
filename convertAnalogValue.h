@@ -13,21 +13,21 @@ public:
   //! @param p_u32_AnalogMin valeur analogique minimun
   //! @param p_u32_AnalogMax valeur analogique maximum
   ConvertAnalogValue(uint32_t p_u32_AnalogMedian = 512, uint32_t p_u32_DeadZone = 30,
-		  double p_dble_MinNegValue = -600, double p_dble_MaxPosValue = 1000, uint32_t p_u32_AnalogMin = 100,
+		  float p_dble_MinNegValue = -600, float p_dble_MaxPosValue = 1000, uint32_t p_u32_AnalogMin = 100,
 		  uint32_t p_u32_AnalogMax = 1024);
   virtual ~ConvertAnalogValue();
 
   //! Retourne la consigne pwm en fonction la consigne de barre
   //! @param p_u32_AnalogValue valeur analogique de consigne de la barre
   //! @return valeur de consigne pwn associée
-  virtual double GetConvertedValue(uint32_t p_u32_AnalogValue);
+  virtual float GetConvertedValue(uint32_t p_u32_AnalogValue);
 
-  double getDbleMaxPosValue() const
+  float getDbleMaxPosValue() const
   {
     return m_dble_MaxPosValue;
   }
 
-  double getDbleMinNegValue() const
+  float getDbleMinNegValue() const
   {
     return m_dble_MinNegValue;
   }
@@ -67,8 +67,8 @@ private:
 
   uint32_t m_u32_DeadZone;
 
-  double m_dble_MaxPosValue;
+  float m_dble_MaxPosValue;
 
-  double m_dble_MinNegValue;
+  float m_dble_MinNegValue;
 };
 
