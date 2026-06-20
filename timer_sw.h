@@ -31,6 +31,7 @@ public:
   virtual void Start(void);
   virtual void Stop(void);
   virtual void SetValue(TimerTime_t Time);
+  virtual TimerTime_t GetValue();
   virtual void Reload(void);
 
   bool Exists(void);

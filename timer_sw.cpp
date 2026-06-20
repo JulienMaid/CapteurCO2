@@ -129,6 +129,11 @@ void TimerEvent_t::SetValue(TimerTime_t Time)
   ReloadValue = Time;
 }
 
+TimerTime_t TimerEvent_t::GetValue(void)
+{
+  return ReloadValue;
+}
+
 void TimerEvent_t::Reload(void)
 {
   Timestamp = ReloadValue;
