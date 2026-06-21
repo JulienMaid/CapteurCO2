@@ -11,5 +11,16 @@ typedef enum qualite_air_t
   Danger
 } qualite_air_t;
 
+typedef enum mode_operation_t
+{
+  mode_extinction = 0,
+  mode_normal,
+  mode_continu,
+} mode_operation_t;
+
+
+
 
 qualite_air_t Determiner_Qualite_Air(const float & p_f_tauxCO2);
+
+void Machine_Etat_Generale(void);
