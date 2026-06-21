@@ -1,3 +1,9 @@
 *.d
 *.o
 *.mk
+/Release/CapteurCO2.eep
+/Release/CapteurCO2.elf
+/Release/CapteurCO2.hex
+/Release/arduino.ar
+/Release/size.awk
+/sloeber.ino.cpp
