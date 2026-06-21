@@ -111,7 +111,7 @@ void GestionClignotementLed::StaticGetSequence(uint32_t arg1, void *ClassGestion
   digitalWrite(l_t_GestionLED->GetPortLed(), l_t_GestionLED->GetSequence());
 }
 
-void GestionClignotementLed::Demarre(void)
+void GestionClignotementLed::Demarrer(void)
 {
   m_t_TimerLed.Start();
 }

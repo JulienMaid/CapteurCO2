@@ -30,7 +30,7 @@ public:
   //! Retourne le numéro du port Led
   uint32_t GetPortLed(void);
 
-  virtual void Demarre(void);
+  virtual void Demarrer(void);
 
   virtual void Arreter(void);
 

@@ -73,7 +73,7 @@ void GestionClignotementLedWS::StaticGetSequence(uint32_t arg1, void *ClassGesti
   l_t_GestionLED->m_pt_GestionLedWS->Nouvelle_Valeur(l_t_GestionLED->m_u8_IndexLed, l_t_GestionLED->GetSequence(), true);
 }
 
-void GestionClignotementLedWS::Demarre(void)
+void GestionClignotementLedWS::Demarrer(void)
 {
   m_t_TimerLed.Start();
 }

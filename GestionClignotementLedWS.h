@@ -23,7 +23,7 @@ public:
 
   virtual void ReglerLuminosite(uint8_t p_u8_Luminosite);
 
-  virtual void Demarre(void);
+  virtual void Demarrer(void);
 
   virtual void Arreter(void);
 
