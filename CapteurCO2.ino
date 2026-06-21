@@ -20,18 +20,11 @@
 #include "tools.h"
 
 
-#define PIN_WS2812B  4   // ESP32 pin that connects to WS2812B
-#define NUM_PIXELS     1  // The number of LEDs (pixels) on WS2812B
-
-Adafruit_NeoPixel g_t_LedWS2812(NUM_PIXELS, PIN_WS2812B, NEO_RGB + NEO_KHZ800);
-
 GestionLedWS_t * g_t_GestionMultiLedWS;
+GestionClignotementLedWS * g_t_ClignotementLedWS;
+GestionClignotementLed g_t_ClignotementLedInterne(LED_BOUTON, false, false);
+GestionSonBuzzer g_t_GestionBuzzer(CMD_BUZZER, false, false);
 
-
-// variables taux de CO2
-unsigned int taux_co2; // sortie du capteur  en ppm
-float taux_pourcent = 0.0; // taux de CO2 en % en type float
-char taux_string[4];// taux de CO2 en type string pour l'afficheur
 
 // définition objet moncapteur
 SCD4x g_t_CapteurSCD41(SCD4x_SENSOR_SCD41);
@@ -40,17 +33,16 @@ Adafruit_SSD1306 g_t_EcranLCD(128,32, &Wire,-1 );//-1 pour signifier qu'aucune  
 // n'est utilisée pour initialiser l'affichage
 
 TimerEvent_t g_t_TimerTempoMesure;
-TimerEvent_t g_t_TimerGestionBP;
+TimerEvent_t g_t_TimerGestionGenerale;
 
 
 ConvertAnalogValue TensionBatterie(0, 0, 0.0, 10.0, 0, 1023);
 
-GestionClignotementLed g_t_LedInterne(0);
-GestionSonBuzzer g_t_GestionBuzzer(0);
+mode_operation_t g_e_Etat_En_Cours = mode_extinction;
+mode_operation_t g_e_Etat_Precedent = mode_extinction;
 
-GestionClignotementLedWS * LedWS;
 
-void GestionTimningBP(uint32_t p_u32_arg, void* p_v_arg);
+void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg);
 
 ///////F: fonction SETUP//////////////////////////////////////////////////////////////////////////////////////////
 void setup()
@@ -59,7 +51,7 @@ void setup()
   MsTimer2:: start();
 
 //  Init_Trace_Debug();
-  g_t_TimerGestionBP.Init(GestionTimningBP, 50, Periodic_Timer, &g_t_TimerGestionBP);
+  g_t_TimerGestionGenerale.Init(GestionTimningGeneral, 50, Periodic_Timer, &g_t_TimerGestionGenerale);
 //  g_t_TimerGestionBP.Start();
 
   g_t_GestionMultiLedWS = new GestionLedWS_t(NUM_PIXELS, PIN_WS2812B);
@@ -111,9 +103,9 @@ void setup()
   g_t_TimerTempoMesure.Start();
 
 
-  LedWS = new GestionClignotementLedWS(0, g_t_GestionMultiLedWS, 50);
-  LedWS->ReglerLuminosite(64);
-  LedWS->Demarre();
+  g_t_ClignotementLedWS = new GestionClignotementLedWS(0, g_t_GestionMultiLedWS, 50);
+  g_t_ClignotementLedWS->ReglerLuminosite(64);
+  g_t_ClignotementLedWS->Demarrer();
 }
 
 ///////F: fonction PRINCIPALE//////////////////////////////////////////////////////////////////////////////////////
@@ -123,18 +115,14 @@ void loop()
 
   if(g_t_TimerTempoMesure.IsTop() == true)
   {
-
-    digitalWrite(13, 1);
-
     acquerir_afficher();
-    delay(100);
-    digitalWrite(13, 0);
 
     l_u16_TensionBatterieInt = (uint16_t)(10.0*TensionBatterie.GetConvertedValue(analogRead(0)));
 
     if(l_u16_TensionBatterieInt < 65)
     {
-// Extinction immédiate
+      // Extinction immédiate
+      g_e_Etat_En_Cours = mode_extinction;
     }
     else if(l_u16_TensionBatterieInt < 74)
     {
@@ -147,9 +135,10 @@ void loop()
 
   }
 
+  Machine_Etat_Generale();
 }
 
-void GestionTimningBP(uint32_t p_u32_arg, void* p_v_arg)
+void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
 {
   static uint32_t l_u32_TempsEcoule = 0;
   static uint16_t l_u32_TempsAppuieBP = 0;
@@ -165,6 +154,7 @@ void GestionTimningBP(uint32_t p_u32_arg, void* p_v_arg)
     if((l_u32_TempsAppuieBP > 100) && (l_u32_TempsAppuieBP < 500))
     {
       // Couper Alarme si ON
+      g_t_GestionBuzzer.ClearSequence();
 
       // Remettre 15 min de temps ON si mode normal
     }
@@ -177,7 +167,8 @@ void GestionTimningBP(uint32_t p_u32_arg, void* p_v_arg)
   {
     if(l_u32_TempsAppuieBP > 1000)
     {
-//ACTIVER MODE_ON
+      //ACTIVER MODE_ON
+      g_e_Etat_En_Cours = mode_normal;
     }
 
 
@@ -186,23 +177,89 @@ void GestionTimningBP(uint32_t p_u32_arg, void* p_v_arg)
   {
     if(l_u32_TempsAppuieBP > 3000)
     {
-//ACTIVER MODE OFF
+      //ACTIVER MODE OFF
+      g_e_Etat_En_Cours = mode_extinction;
     }
 
     if(l_u32_TempsEcoule > 900000)
     {
-// Si Mode normal, extinction car allumé depuis 15min.
-
+      // Si Mode normal, extinction car allumé depuis 15min.
+      if(g_e_Etat_En_Cours == mode_normal)
+      {
+        g_e_Etat_En_Cours = mode_extinction;
+      }
     }
     else if(l_u32_TempsEcoule > 840000)
     {
-// Si Mode normal, alarme pour prévenir extinction prochain.
+      // Si Mode normal, alarme pour prévenir extinction prochain.
 
     }
 
   }
 
   l_u32_TempsEcoule += l_pt_TimerGestionBP->GetValue();
+}
+
+void Machine_Etat_Generale(void)
+{
+  if((g_e_Etat_En_Cours != g_e_Etat_Precedent))
+  {
+    if((g_e_Etat_Precedent == mode_extinction) && (g_e_Etat_En_Cours != mode_extinction))
+    {
+      Mode_ON();
+    }
+    else if((g_e_Etat_Precedent != mode_extinction) && (g_e_Etat_En_Cours == mode_extinction))
+    {
+      Mode_OFF();
+    }
+
+    if(g_e_Etat_En_Cours == mode_normal)
+    {
+      Mode_Normal();
+    }
+    else if(g_e_Etat_En_Cours == mode_continu)
+    {
+      Mode_Continu();
+    }
+
+    g_e_Etat_Precedent = g_e_Etat_En_Cours;
+
+  }
+
+}
+
+void Mode_Normal(void)
+{
+  g_t_TimerTempoMesure.SetValue(5000);
+
+  g_t_CapteurSCD41.stopPeriodicMeasurement();
+  g_t_CapteurSCD41.startPeriodicMeasurement();
+}
+
+void Mode_Continu(void)
+{
+  g_t_TimerTempoMesure.SetValue(30000);
+
+  g_t_CapteurSCD41.stopPeriodicMeasurement();
+  g_t_CapteurSCD41.startLowPowerPeriodicMeasurement();
+}
+
+void Mode_ON(void)
+{
+  digitalWrite(CMD_ONOFF, 1);
+
+  g_t_ClignotementLedInterne.Demarrer();
+  g_t_ClignotementLedWS->Demarrer();
+  g_t_GestionBuzzer.Demarrer();
+}
+
+void Mode_OFF(void)
+{
+  digitalWrite(CMD_ONOFF, 0);
+
+  g_t_ClignotementLedInterne.Arreter();
+  g_t_ClignotementLedWS->Arreter();
+  g_t_GestionBuzzer.Arreter();
 }
 
 ///////F:fonction faire la première mesure pour ne pas l'afficher car est à 0   /////////////////////////////////////
@@ -216,33 +273,16 @@ void acquerir()
 ///////F:fonction faire la mesure, l'afficher  //////////////////////////////////////////////
 void acquerir_afficher()
 {
+  // variables taux de CO2
+  unsigned int taux_co2; // sortie du capteur  en ppm
+  float taux_pourcent = 0.0; // taux de CO2 en % en type float
+  char taux_string[4];// taux de CO2 en type string pour l'afficheur
   qualite_air_t l_e_Qualite_Air;
 
   // acquerir taux de CO2
   taux_co2=(int)g_t_CapteurSCD41.getCO2();
   taux_pourcent=(float)taux_co2 /10000;
   dtostrf(taux_pourcent,4,2,taux_string);
-
-//  taux_pourcent += 0.05;
-//  dtostrf(taux_pourcent,4,2,taux_string);
-
-//  Serial.println("");
-//  Serial.print(F("taux de CO2 en ppm : "));
-//  Serial.print(taux_co2);
-//  Serial.print(F(" PPM "));
-//  Serial.print("   en % : " );
-//  Serial.print(taux_pourcent,1);
-//  Serial.print(F(" % "));
-//  Serial.println("");
-//  Serial.print("taux d'humidité en %H : ");
-//  Serial.print(moncapteur.getHumidity(), 1);
-//  Serial.print("%H");
-//  Serial.println("");
-//
-//  Serial.print(F("temoerature : "));
-//  Serial.print(moncapteur.getTemperature());
-//  Serial.print(F(" oC "));
-//  Serial.println("");
 
   g_t_EcranLCD.clearDisplay();
   g_t_EcranLCD.setTextSize(3);
@@ -259,23 +299,23 @@ void acquerir_afficher()
   switch(l_e_Qualite_Air)
   {
   case Acceptable:
-    LedWS->SetSequence(1);
+    g_t_ClignotementLedWS->SetSequence(1);
     break;
 
   case Mediocre:
-    LedWS->SetSequence(2);
+    g_t_ClignotementLedWS->SetSequence(2);
     break;
 
   case Mauvaise:
-    LedWS->SetSequence(3);
+    g_t_ClignotementLedWS->SetSequence(3);
     break;
 
   case Tres_Mauvaise:
-    LedWS->SetSequence(4);
+    g_t_ClignotementLedWS->SetSequence(4);
     break;
 
   case Danger:
-    LedWS->SetSequence(5);
+    g_t_ClignotementLedWS->SetSequence(5);
     break;
 
   }
