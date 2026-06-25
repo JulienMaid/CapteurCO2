@@ -10,7 +10,7 @@
 #include "GestionClignotementLed.h"
 
 GestionClignotementLed::GestionClignotementLed(uint32_t p_u32_PortLed, bool p_b_Reverse,
-		bool p_b_AutonomousOperation, uint8_t p_u8_SequenceLength) :
+		bool p_b_AutonomousOperation, uint8_t p_u8_SequenceLength, uint32_t p_u32_PeriodeSequence) :
     m_u32_PortLed(p_u32_PortLed), m_u8_SequenceLength(p_u8_SequenceLength), m_u8_SequenceIndex(0),
 	m_b_Reverse(p_b_Reverse)
 {
@@ -19,7 +19,7 @@ GestionClignotementLed::GestionClignotementLed(uint32_t p_u32_PortLed, bool p_b_
 
   pinMode(m_u32_PortLed, OUTPUT);
 
-  m_t_TimerLed.Init(StaticGetSequence, 100, true, this);
+  m_t_TimerLed.Init(StaticGetSequence, p_u32_PeriodeSequence, true, this);
 
   if (p_b_AutonomousOperation == true)
   {

@@ -15,7 +15,7 @@
 
 #define CMD_LEDWS       0
 
-#define LED_BOUTON      13
+#define CMD_LED_BOUTON      13
 
 #define CMD_BUZZER      5
 

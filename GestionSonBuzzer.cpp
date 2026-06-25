@@ -7,11 +7,11 @@
 
 #include "GestionSonBuzzer.h"
 #include <string.h>
-
+#include <stdint.h>
 
 GestionSonBuzzer::GestionSonBuzzer(uint32_t p_u32_PortLed, bool p_b_Reverse,
-    bool p_b_AutonomousOperation, uint8_t p_u8_SequenceLength) :
-    GestionClignotementLed(p_u32_PortLed, p_b_Reverse, p_b_AutonomousOperation, p_u8_SequenceLength)
+    bool p_b_AutonomousOperation, uint8_t p_u8_SequenceLength, uint32_t p_u32_PeriodeSequence) :
+    GestionClignotementLed(p_u32_PortLed, p_b_Reverse, p_b_AutonomousOperation, p_u8_SequenceLength, p_u32_PeriodeSequence)
 {
   // TODO Auto-generated constructor stub
 
@@ -31,8 +31,8 @@ void GestionSonBuzzer::SetSequence(uint8_t p_u8_NumeroSequence)
       0, 0, 0, 0 };
   const uint8_t l_tu8_BuzzerSequence3[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0 };
-  const uint8_t l_tu8_BuzzerSequence4[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0,
-      0, 0, 0, 0 };
+  const uint8_t l_tu8_BuzzerSequence4[m_u8_SequenceLength] = { 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0,
+      1, 1, 0, 0 };
 
   uint8_t * l_ptu8_LedSequenceX = nullptr;
 

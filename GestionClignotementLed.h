@@ -19,7 +19,7 @@ public:
   //! @param p_b_AutonomousOperation active ou non le fonctionne autonome de l'object (allumage auto de la led, période séquence 100ms)
   //! @param p_u8_SequenceLength taille de la séquence d'allumage/extinction
   GestionClignotementLed(uint32_t p_u32_PortLed = 0, bool p_b_Reverse = false, bool p_b_AutonomousOperation = true,
-      uint8_t p_u8_SequenceLength = 20);
+      uint8_t p_u8_SequenceLength = 20, uint32_t p_u32_PeriodeSequence = 100);
 
   //! Destructeur de la classe
   virtual ~GestionClignotementLed();
