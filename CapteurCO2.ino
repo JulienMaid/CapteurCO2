@@ -53,7 +53,7 @@ void setup()
   g_t_TimerGestionGenerale.Init(GestionTimningGeneral, 50, Periodic_Timer, &g_t_TimerGestionGenerale);
 //  g_t_TimerGestionBP.Start();
 
-  g_t_GestionMultiLedWS = new GestionLedWS_t(NUM_PIXELS, PIN_WS2812B);
+  g_t_GestionMultiLedWS = new GestionLedWS_t(NUM_PIXELS, CMD_LEDWS);
 
   Init_EntreesSorties();
 
