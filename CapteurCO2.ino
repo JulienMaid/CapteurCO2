@@ -55,6 +55,9 @@ void setup()
 
   g_t_GestionMultiLedWS = new GestionLedWS_t(NUM_PIXELS, CMD_LEDWS);
 
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(0, HTMLColorCode::Purple, true);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Purple, true);
+
   Init_EntreesSorties();
 
   Wire.begin();// initialisation de la liaison I2C
@@ -101,6 +104,8 @@ void setup()
   g_t_TimerTempoMesure.Init(NULL, 5000);
   g_t_TimerTempoMesure.Start();
 
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(0, HTMLColorCode::Black, true);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
 
   g_t_ClignotementLedWS = new GestionClignotementLedWS(0, g_t_GestionMultiLedWS, 50);
   g_t_ClignotementLedWS->ReglerLuminosite(64);
