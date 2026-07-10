@@ -80,6 +80,14 @@ void Init_EntreesSorties(void)
 
 }
 
+void Mode_Normal_Debut(void)
+{
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Green, true);
+  delay(200);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
+
+}
+
 void Mode_Normal(void)
 {
   g_t_TimerTempoMesure.SetValue(5000);
