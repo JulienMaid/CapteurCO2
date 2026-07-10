@@ -161,6 +161,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
     if(l_u16_TempsAppuieBP < 0xffff)
     {
       l_u16_TempsAppuieBP += l_pt_TimerGestionBP->GetValue();
+      Serial.println(l_u16_TempsAppuieBP);
     }
 
     if(l_u32_TempsEcoule < 2000)
@@ -168,19 +169,27 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       if(l_u16_TempsAppuieBP > 1000)
       {
         //ACTIVER MODE_ON
-        g_t_Etat_En_Ecours.EcrireValeur(mode_normal);
+        g_t_Etat_En_Ecours.EcrireValeur(mode_normal_debut);
+        digitalWrite(CMD_LED_BOUTON,1);
       }
     }
+    else
+    {
+      digitalWrite(CMD_LED_BOUTON,1);
+    }
+
   }
   else
   {
+    digitalWrite(CMD_LED_BOUTON,0);
+
     if(l_u16_TempsRelacheBP < 0xffff)
     {
       l_u16_TempsRelacheBP += l_pt_TimerGestionBP->GetValue();
     }
 
 
-    if((l_u16_TempsAppuieBP > 100) && (l_u16_TempsAppuieBP < 500))
+    if((l_u16_TempsAppuieBP > 100) && (l_u16_TempsAppuieBP < 1000))
     {
       // Couper Alarme si ON
 //      g_t_GestionBuzzer.ClearSequence();
@@ -188,6 +197,8 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       // Remettre 15 min de temps ON si mode normal
       if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
       {
+        Serial.println("Remise 0");
+        g_t_Etat_En_Ecours.EcrireValeur(mode_normal_debut);
         l_u32_TempsEcoule = 0;
       }
     }
@@ -236,6 +247,12 @@ void Machine_Etat_Generale(void)
     else if((g_e_Etat_Precedent != mode_extinction) && (g_t_Etat_En_Ecours.LireValeur() == mode_extinction))
     {
       Mode_OFF();
+    }
+
+    if(g_t_Etat_En_Ecours.LireValeur() == mode_normal_debut)
+    {
+      Mode_Normal_Debut();
+      g_t_Etat_En_Ecours.EcrireValeur(mode_normal);
     }
 
     if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)

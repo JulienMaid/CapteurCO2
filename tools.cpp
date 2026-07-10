@@ -94,6 +94,8 @@ void Mode_Normal(void)
 
   g_t_CapteurSCD41.stopPeriodicMeasurement();
   g_t_CapteurSCD41.startPeriodicMeasurement();
+
+  Serial.println("Mode Normal");
 }
 
 void Mode_Continu(void)
@@ -102,6 +104,8 @@ void Mode_Continu(void)
 
   g_t_CapteurSCD41.stopPeriodicMeasurement();
   g_t_CapteurSCD41.startLowPowerPeriodicMeasurement();
+
+  Serial.println("Mode Continu");
 }
 
 void Mode_ON(void)
@@ -111,15 +115,20 @@ void Mode_ON(void)
 //  g_t_ClignotementLedInterne.Demarrer();
   g_t_ClignotementLedWS->Demarrer();
 //  g_t_GestionBuzzer.Demarrer();
+
+  Serial.println("Mode ON");
 }
 
 void Mode_OFF(void)
 {
   digitalWrite(CMD_ONOFF, 0);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Red, true);
 
 //  g_t_ClignotementLedInterne.Arreter();
   g_t_ClignotementLedWS->Arreter();
 //  g_t_GestionBuzzer.Arreter();
+
+  Serial.println("Mode OFF");
 }
 
 void Mode_Stop_Alarme(void)
