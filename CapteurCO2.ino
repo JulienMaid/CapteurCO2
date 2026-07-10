@@ -18,12 +18,13 @@
 #include "GestionClignotementLedWS.h"
 
 #include "tools.h"
+#include "VariableTracee.h"
 
 
 GestionLedWS_t * g_t_GestionMultiLedWS;
 GestionClignotementLedWS * g_t_ClignotementLedWS;
-GestionClignotementLed g_t_ClignotementLedInterne(CMD_LED_BOUTON, false, false);
-GestionSonBuzzer g_t_GestionBuzzer(CMD_BUZZER, false, false, 200);
+//GestionClignotementLed g_t_ClignotementLedInterne(CMD_LED_BOUTON, false, false);
+//GestionSonBuzzer g_t_GestionBuzzer(CMD_BUZZER, false, false, 200);
 
 
 // définition objet moncapteur
@@ -36,9 +37,10 @@ TimerEvent_t g_t_TimerTempoMesure;
 TimerEvent_t g_t_TimerGestionGenerale;
 
 
-ConvertAnalogValue TensionBatterie(0, 0, 0.0, 10.0, 0, 1023);
+//ConvertAnalogValue TensionBatterie(0, 0, 0.0, 10.0, 0, 1023);
 
-mode_operation_t g_e_Etat_En_Cours = mode_extinction;
+
+VariableTracee<mode_operation_t> g_t_Etat_En_Ecours(mode_extinction, "g_t_Etat_En_Ecours", true);
 boolean g_e_Alarme_En_Cours = false;
 
 void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg);
@@ -49,9 +51,12 @@ void setup()
   MsTimer2 :: set (DEC_TIMESTAMP, Inc_Timer); //execution de la routine "alarme_cligno" toutes les 100ms
   MsTimer2:: start();
 
+  Serial.begin(115200);
+  Serial.println("CapteurCO2");
+
 //  Init_Trace_Debug();
   g_t_TimerGestionGenerale.Init(GestionTimningGeneral, 50, Periodic_Timer, &g_t_TimerGestionGenerale);
-//  g_t_TimerGestionBP.Start();
+  g_t_TimerGestionGenerale.Start();
 
   g_t_GestionMultiLedWS = new GestionLedWS_t(NUM_PIXELS, CMD_LEDWS);
 
@@ -65,12 +70,12 @@ void setup()
   // Initialisation afficheur Oled 128 x 32
   if (!g_t_EcranLCD.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
-    Serial.println(F("SSD1306 erreur d'allocation "));
+//    Serial.println(F("SSD1306 erreur d'allocation "));
     for (;;);
   }
   else
   {
-    Serial.println(F(" display detecté"));//
+//    Serial.println(F(" display detecté"));//
   }
   g_t_EcranLCD.clearDisplay();
 
@@ -114,18 +119,18 @@ void setup()
 ///////F: fonction PRINCIPALE//////////////////////////////////////////////////////////////////////////////////////
 void loop()
 {
-  uint16_t l_u16_TensionBatterieInt;
+  uint16_t l_u16_TensionBatterieInt = 1000;
 
   if(g_t_TimerTempoMesure.IsTop() == true)
   {
     acquerir_afficher();
 
-    l_u16_TensionBatterieInt = (uint16_t)(10.0*TensionBatterie.GetConvertedValue(analogRead(0)));
+//    l_u16_TensionBatterieInt = (uint16_t)(10.0*TensionBatterie.GetConvertedValue(analogRead(0)));
 
     if(l_u16_TensionBatterieInt < 65)
     {
       // Extinction immédiate
-      g_e_Etat_En_Cours = mode_extinction;
+      g_t_Etat_En_Ecours.EcrireValeur(mode_extinction);
     }
     else if(l_u16_TensionBatterieInt < 74)
     {
@@ -146,10 +151,12 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
   static uint32_t l_u32_TempsEcoule = 0;
   static uint16_t l_u16_TempsAppuieBP = 0;
   static uint16_t l_u16_TempsRelacheBP = 0;
+  static VariableTracee<uint16_t> l_b_EtatBP(1, "l_b_EtatBP", true);
   TimerEvent_t * l_pt_TimerGestionBP = (TimerEvent_t *)p_v_arg;
 
+  l_b_EtatBP.EcrireValeur(digitalRead(ENTREE_BP));
 
-  if(digitalRead(ENTREE_BP) == 1)
+  if(l_b_EtatBP.LireValeur() == 1)
   {
     if(l_u16_TempsAppuieBP < 0xffff)
     {
@@ -161,7 +168,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       if(l_u16_TempsAppuieBP > 1000)
       {
         //ACTIVER MODE_ON
-        g_e_Etat_En_Cours = mode_normal;
+        g_t_Etat_En_Ecours.EcrireValeur(mode_normal);
       }
     }
   }
@@ -176,10 +183,10 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
     if((l_u16_TempsAppuieBP > 100) && (l_u16_TempsAppuieBP < 500))
     {
       // Couper Alarme si ON
-      g_t_GestionBuzzer.ClearSequence();
+//      g_t_GestionBuzzer.ClearSequence();
 
       // Remettre 15 min de temps ON si mode normal
-      if(g_e_Etat_En_Cours == mode_normal)
+      if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
       {
         l_u32_TempsEcoule = 0;
       }
@@ -192,23 +199,23 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
   if(l_u16_TempsAppuieBP > 3000)
   {
     //ACTIVER MODE OFF
-    g_e_Etat_En_Cours = mode_extinction;
+    g_t_Etat_En_Ecours.EcrireValeur(mode_extinction);
   }
 
   if(l_u32_TempsEcoule > 900000)
   {
     // Si Mode normal, extinction car allumé depuis 15min.
-    if(g_e_Etat_En_Cours == mode_normal)
+    if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
     {
-      g_e_Etat_En_Cours = mode_extinction;
+      g_t_Etat_En_Ecours.EcrireValeur(mode_extinction);
     }
   }
   else if(l_u32_TempsEcoule > 840000)
   {
     // Si Mode normal, alarme pour prévenir extinction prochain.
-    if(g_e_Etat_En_Cours == mode_normal)
+    if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
     {
-      g_t_GestionBuzzer.SetSequence(1);
+//      g_t_GestionBuzzer.SetSequence(1);
     }
   }
 
@@ -220,27 +227,27 @@ void Machine_Etat_Generale(void)
   static mode_operation_t g_e_Etat_Precedent = mode_extinction;
 
 
-  if((g_e_Etat_En_Cours != g_e_Etat_Precedent))
+  if((g_t_Etat_En_Ecours.LireValeur() != g_e_Etat_Precedent))
   {
-    if((g_e_Etat_Precedent == mode_extinction) && (g_e_Etat_En_Cours != mode_extinction))
+    if((g_e_Etat_Precedent == mode_extinction) && (g_t_Etat_En_Ecours.LireValeur() != mode_extinction))
     {
       Mode_ON();
     }
-    else if((g_e_Etat_Precedent != mode_extinction) && (g_e_Etat_En_Cours == mode_extinction))
+    else if((g_e_Etat_Precedent != mode_extinction) && (g_t_Etat_En_Ecours.LireValeur() == mode_extinction))
     {
       Mode_OFF();
     }
 
-    if(g_e_Etat_En_Cours == mode_normal)
+    if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
     {
       Mode_Normal();
     }
-    else if(g_e_Etat_En_Cours == mode_continu)
+    else if(g_t_Etat_En_Ecours.LireValeur() == mode_continu)
     {
       Mode_Continu();
     }
 
-    g_e_Etat_Precedent = g_e_Etat_En_Cours;
+    g_e_Etat_Precedent = g_t_Etat_En_Ecours.LireValeur();
 
   }
 
