@@ -1,5 +1,3 @@
-#include <EEPROM.h>
-
 #include <Wire.h> // pour la communication I2C
 #include "SparkFun_SCD4x_Arduino_Library.h" // pour le captur SCD41
 #include <Adafruit_GFX.h> // pour les graphiques
@@ -13,7 +11,7 @@
 #include "gestion_Led_WS.h"
 
 #include "convertAnalogValue.h"
-#include "GestionClignotementLed.h"
+//#include "GestionClignotementLed.h"
 #include "GestionSonBuzzer.h"
 #include "GestionClignotementLedWS.h"
 
@@ -40,7 +38,8 @@ TimerEvent_t g_t_TimerGestionGenerale;
 //ConvertAnalogValue TensionBatterie(0, 0, 0.0, 10.0, 0, 1023);
 
 
-VariableTracee<mode_operation_t> g_t_Etat_En_Ecours(mode_extinction, "g_t_Etat_En_Ecours", true);
+VariableTracee<uint16_t> g_t_Etat_En_Ecours(mode_extinction, "g_t_Etat_En_Ecours", true);
+//VariableTracee<mode_operation_t> g_t_Etat_En_Ecours(mode_extinction, "g_t_Etat_En_Ecours", true);
 boolean g_e_Alarme_En_Cours = false;
 
 void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg);
@@ -61,22 +60,15 @@ void setup()
   g_t_GestionMultiLedWS = new GestionLedWS_t(NUM_PIXELS, CMD_LEDWS);
 
   g_t_GestionMultiLedWS->Nouvelle_Valeur(0, HTMLColorCode::Purple, true);
-  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Purple, true);
+//  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Purple, true);
 
   Init_EntreesSorties();
 
   Wire.begin();// initialisation de la liaison I2C
 
   // Initialisation afficheur Oled 128 x 32
-  if (!g_t_EcranLCD.begin(SSD1306_SWITCHCAPVCC, 0x3C))
-  {
-//    Serial.println(F("SSD1306 erreur d'allocation "));
-    for (;;);
-  }
-  else
-  {
-//    Serial.println(F(" display detecté"));//
-  }
+  g_t_EcranLCD.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+
   g_t_EcranLCD.clearDisplay();
 
   g_t_EcranLCD.setTextSize(2);
@@ -93,16 +85,6 @@ void setup()
 
   // Initialisation capteur SCD41
   g_t_CapteurSCD41.begin();
-  // moncapteur.enableDebugging();  // message debug sur Serial
-  if (g_t_CapteurSCD41.begin() == false)
-  {
-//    SEND_VTRACE(INFO, "SCD41 non détecté");
-    for (;;);
-  }
-  else
-  {
-//    SEND_VTRACE(INFO, "SCD41  détecté");
-  }
 
   acquerir();
 
@@ -114,6 +96,10 @@ void setup()
 
   g_t_ClignotementLedWS = new GestionClignotementLedWS(0, g_t_GestionMultiLedWS, 50);
   g_t_ClignotementLedWS->ReglerLuminosite(64);
+
+
+  // Pour débug..
+//  g_t_Etat_En_Ecours.EcrireValeur(mode_normal_debut);
 }
 
 ///////F: fonction PRINCIPALE//////////////////////////////////////////////////////////////////////////////////////
@@ -123,6 +109,9 @@ void loop()
 
   if(g_t_TimerTempoMesure.IsTop() == true)
   {
+    Serial.print("Etat:");
+    Serial.println(g_t_Etat_En_Ecours.LireValeur());
+
     acquerir_afficher();
 
 //    l_u16_TensionBatterieInt = (uint16_t)(10.0*TensionBatterie.GetConvertedValue(analogRead(0)));
@@ -153,11 +142,30 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
   static uint16_t l_u16_TempsRelacheBP = 0;
   static VariableTracee<uint16_t> l_b_EtatBP(1, "l_b_EtatBP", true);
   TimerEvent_t * l_pt_TimerGestionBP = (TimerEvent_t *)p_v_arg;
+//  static uint8_t l_u8_NbreAppui = 0;
+  static VariableTracee<uint16_t> l_u8_NbreAppui(0, "l_u8_NbreAppui", true);
+
 
   l_b_EtatBP.EcrireValeur(digitalRead(ENTREE_BP));
 
   if(l_b_EtatBP.LireValeur() == 1)
   {
+    if(l_u16_TempsRelacheBP != 0)
+    {
+      l_u16_TempsAppuieBP = 0;
+      l_u16_TempsRelacheBP = 0;
+    }
+
+    if(l_u8_NbreAppui.LireValeur() == 0)
+    {
+      l_u8_NbreAppui.EcrireValeur(1);
+    }
+    else if((l_u16_TempsRelacheBP < 200) && (l_u16_TempsRelacheBP != 0))
+    {
+      l_u8_NbreAppui.EcrireValeur(l_u8_NbreAppui.LireValeur() + 1);
+    }
+    l_u16_TempsRelacheBP = 0;
+
     if(l_u16_TempsAppuieBP < 0xffff)
     {
       l_u16_TempsAppuieBP += l_pt_TimerGestionBP->GetValue();
@@ -183,6 +191,16 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
   {
     digitalWrite(CMD_LED_BOUTON,0);
 
+    if(l_u8_NbreAppui.LireValeur() >= 3)
+    {
+      g_t_Etat_En_Ecours.EcrireValeur(mode_continu);
+    }
+
+    if(l_u16_TempsRelacheBP > 1000)
+    {
+      l_u8_NbreAppui.EcrireValeur(0);
+    }
+
     if(l_u16_TempsRelacheBP < 0xffff)
     {
       l_u16_TempsRelacheBP += l_pt_TimerGestionBP->GetValue();
@@ -194,6 +212,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       // Couper Alarme si ON
 //      g_t_GestionBuzzer.ClearSequence();
 
+
       // Remettre 15 min de temps ON si mode normal
       if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
       {
@@ -204,32 +223,36 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
     }
 
     l_u16_TempsAppuieBP = 0;
+
   }
 
-
-  if(l_u16_TempsAppuieBP > 3000)
+  if(g_t_Etat_En_Ecours.LireValeur() != mode_extinction)
   {
-    //ACTIVER MODE OFF
-    g_t_Etat_En_Ecours.EcrireValeur(mode_extinction);
-  }
-
-  if(l_u32_TempsEcoule > 900000)
-  {
-    // Si Mode normal, extinction car allumé depuis 15min.
-    if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
+    if(l_u16_TempsAppuieBP > 2000)
     {
+      g_t_Etat_En_Ecours.EcrireValeur(mode_continu);
+    }
+
+    if(l_u16_TempsAppuieBP > 4000)
+    {
+      //ACTIVER MODE OFF
       g_t_Etat_En_Ecours.EcrireValeur(mode_extinction);
     }
   }
-  else if(l_u32_TempsEcoule > 840000)
+
+  if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
   {
-    // Si Mode normal, alarme pour prévenir extinction prochain.
-    if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
+    if(l_u32_TempsEcoule > 900000)
     {
+      // Si Mode normal, extinction car allumé depuis 15min.
+        g_t_Etat_En_Ecours.EcrireValeur(mode_extinction);
+    }
+    else if(l_u32_TempsEcoule > 840000)
+    {
+      // Si Mode normal, alarme pour prévenir extinction prochain.
 //      g_t_GestionBuzzer.SetSequence(1);
     }
   }
-
   l_u32_TempsEcoule += l_pt_TimerGestionBP->GetValue();
 }
 
@@ -238,7 +261,8 @@ void Machine_Etat_Generale(void)
   static mode_operation_t g_e_Etat_Precedent = mode_extinction;
 
 
-  if((g_t_Etat_En_Ecours.LireValeur() != g_e_Etat_Precedent))
+  if(((g_t_Etat_En_Ecours.LireValeur() != g_e_Etat_Precedent))
+      || (g_t_Etat_En_Ecours.LireValeur() == mode_normal_debut))
   {
     if((g_e_Etat_Precedent == mode_extinction) && (g_t_Etat_En_Ecours.LireValeur() != mode_extinction))
     {
@@ -252,13 +276,19 @@ void Machine_Etat_Generale(void)
     if(g_t_Etat_En_Ecours.LireValeur() == mode_normal_debut)
     {
       Mode_Normal_Debut();
+
+      if(g_e_Etat_Precedent != mode_normal)
+      {
+        Mode_Normal();
+      }
+      g_e_Etat_Precedent = g_t_Etat_En_Ecours.LireValeur();
       g_t_Etat_En_Ecours.EcrireValeur(mode_normal);
     }
 
-    if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
-    {
-      Mode_Normal();
-    }
+//    if(g_t_Etat_En_Ecours.LireValeur() == mode_normal)
+//    {
+//      Mode_Normal();
+//    }
     else if(g_t_Etat_En_Ecours.LireValeur() == mode_continu)
     {
       Mode_Continu();

@@ -7,8 +7,8 @@
 
 #include "tools.h"
 #include <Arduino.h>
-#include "GestionClignotementLed.h"
-//#include "GestionSonBuzzer.h"
+//#include "GestionClignotementLed.h"
+#include "GestionSonBuzzer.h"
 #include "GestionClignotementLedWS.h"
 #include "timer_sw.h"
 #include "DefinitionES.h"
@@ -25,7 +25,7 @@
 extern GestionLedWS_t * g_t_GestionMultiLedWS;
 extern GestionClignotementLedWS * g_t_ClignotementLedWS;
 //extern GestionClignotementLed g_t_ClignotementLedInterne;
-//extern GestionSonBuzzer g_t_GestionBuzzer;
+extern GestionSonBuzzer g_t_GestionBuzzer;
 extern SCD4x g_t_CapteurSCD41;
 extern Adafruit_SSD1306 g_t_EcranLCD;
 extern TimerEvent_t g_t_TimerTempoMesure;
@@ -83,9 +83,10 @@ void Init_EntreesSorties(void)
 void Mode_Normal_Debut(void)
 {
   g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Green, true);
+  digitalWrite(CMD_BUZZER, 1);
   delay(200);
   g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
-
+  digitalWrite(CMD_BUZZER, 0);
 }
 
 void Mode_Normal(void)
@@ -100,6 +101,30 @@ void Mode_Normal(void)
 
 void Mode_Continu(void)
 {
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Orange, true);
+  digitalWrite(CMD_BUZZER, 1);
+  delay(200);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
+  digitalWrite(CMD_BUZZER, 0);
+
+  delay(200);
+
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Orange, true);
+  digitalWrite(CMD_BUZZER, 1);
+  delay(200);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
+  digitalWrite(CMD_BUZZER, 0);
+
+  delay(200);
+
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Orange, true);
+  digitalWrite(CMD_BUZZER, 1);
+  delay(200);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
+  digitalWrite(CMD_BUZZER, 0);
+
+  g_t_ClignotementLedWS->ReglerIndexLed(1);
+
   g_t_TimerTempoMesure.SetValue(30000);
 
   g_t_CapteurSCD41.stopPeriodicMeasurement();
