@@ -7,7 +7,7 @@
 
 #include "tools.h"
 #include <Arduino.h>
-#include "GestionClignotementLed.h"
+//#include "GestionClignotementLed.h"
 #include "GestionSonBuzzer.h"
 #include "GestionClignotementLedWS.h"
 #include "timer_sw.h"
@@ -19,12 +19,12 @@
 #include <Adafruit_NeoPixel.h>
 #include "convertAnalogValue.h"
 #include "DefinitionES.h"
-
+#include "VariableTracee.h"
 
 
 extern GestionLedWS_t * g_t_GestionMultiLedWS;
 extern GestionClignotementLedWS * g_t_ClignotementLedWS;
-extern GestionClignotementLed g_t_ClignotementLedInterne;
+//extern GestionClignotementLed g_t_ClignotementLedInterne;
 extern GestionSonBuzzer g_t_GestionBuzzer;
 extern SCD4x g_t_CapteurSCD41;
 extern Adafruit_SSD1306 g_t_EcranLCD;
@@ -34,10 +34,10 @@ extern TimerEvent_t g_t_TimerGestionGenerale;
 
 extern ConvertAnalogValue TensionBatterie;
 
-extern mode_operation_t g_e_Etat_En_Cours;
+//extern mode_operation_t g_e_Etat_En_Cours;
 extern boolean g_e_Alarme_En_Cours;
 
-
+extern VariableTracee<mode_operation_t> g_t_Etat_En_Ecours;
 
 qualite_air_t Determiner_Qualite_Air(const float & p_f_tauxCO2)
 {
@@ -80,43 +80,85 @@ void Init_EntreesSorties(void)
 
 }
 
+void Mode_Normal_Debut(void)
+{
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Green, true);
+  digitalWrite(CMD_BUZZER, 1);
+  delay(200);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
+  digitalWrite(CMD_BUZZER, 0);
+}
+
 void Mode_Normal(void)
 {
   g_t_TimerTempoMesure.SetValue(5000);
 
   g_t_CapteurSCD41.stopPeriodicMeasurement();
   g_t_CapteurSCD41.startPeriodicMeasurement();
+
+  Serial.println("Mode Normal");
 }
 
 void Mode_Continu(void)
 {
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Orange, true);
+  digitalWrite(CMD_BUZZER, 1);
+  delay(200);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
+  digitalWrite(CMD_BUZZER, 0);
+
+  delay(200);
+
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Orange, true);
+  digitalWrite(CMD_BUZZER, 1);
+  delay(200);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
+  digitalWrite(CMD_BUZZER, 0);
+
+  delay(200);
+
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Orange, true);
+  digitalWrite(CMD_BUZZER, 1);
+  delay(200);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Black, true);
+  digitalWrite(CMD_BUZZER, 0);
+
+  g_t_ClignotementLedWS->ReglerIndexLed(1);
+
   g_t_TimerTempoMesure.SetValue(30000);
 
   g_t_CapteurSCD41.stopPeriodicMeasurement();
   g_t_CapteurSCD41.startLowPowerPeriodicMeasurement();
+
+  Serial.println("Mode Continu");
 }
 
 void Mode_ON(void)
 {
   digitalWrite(CMD_ONOFF, 1);
 
-  g_t_ClignotementLedInterne.Demarrer();
+//  g_t_ClignotementLedInterne.Demarrer();
   g_t_ClignotementLedWS->Demarrer();
-  g_t_GestionBuzzer.Demarrer();
+//  g_t_GestionBuzzer.Demarrer();
+
+  Serial.println("Mode ON");
 }
 
 void Mode_OFF(void)
 {
   digitalWrite(CMD_ONOFF, 0);
+  g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Red, true);
 
-  g_t_ClignotementLedInterne.Arreter();
+//  g_t_ClignotementLedInterne.Arreter();
   g_t_ClignotementLedWS->Arreter();
-  g_t_GestionBuzzer.Arreter();
+//  g_t_GestionBuzzer.Arreter();
+
+  Serial.println("Mode OFF");
 }
 
 void Mode_Stop_Alarme(void)
 {
-  g_t_GestionBuzzer.ClearSequence();
+//  g_t_GestionBuzzer.ClearSequence();
 }
 
 ///////F:fonction faire la première mesure pour ne pas l'afficher car est à 0   /////////////////////////////////////
@@ -168,19 +210,19 @@ void acquerir_afficher()
   case Mauvaise:
     g_t_ClignotementLedWS->ReglerLuminosite(128);
     g_t_ClignotementLedWS->SetSequence(3);
-    g_t_GestionBuzzer.SetSequence(2);
+//    g_t_GestionBuzzer.SetSequence(2);
     break;
 
   case Tres_Mauvaise:
     g_t_ClignotementLedWS->ReglerLuminosite(200);
     g_t_ClignotementLedWS->SetSequence(4);
-    g_t_GestionBuzzer.SetSequence(3);
+//    g_t_GestionBuzzer.SetSequence(3);
     break;
 
   case Danger:
     g_t_ClignotementLedWS->ReglerLuminosite(200);
     g_t_ClignotementLedWS->SetSequence(5);
-    g_t_GestionBuzzer.SetSequence(4);
+//    g_t_GestionBuzzer.SetSequence(4);
     break;
 
   }

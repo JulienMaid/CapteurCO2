@@ -8,7 +8,7 @@
 #include "gestion_Led_WS.h"
 
 
-GestionLedWS_t::GestionLedWS_t(uint16_t p_u8_NbreLed, int16_t p_i16_NumPatte)
+GestionLedWS_t::GestionLedWS_t(uint16_t p_u8_NbreLed, int16_t p_i16_NumPatte) : m_u16_NbreLed(p_u8_NbreLed)
 {
   if(m_pt_NeoPixel != nullptr)
   {
@@ -16,8 +16,7 @@ GestionLedWS_t::GestionLedWS_t(uint16_t p_u8_NbreLed, int16_t p_i16_NumPatte)
   }
 
 //  m_pt_NeoPixel = new Adafruit_NeoPixel(p_u8_NbreLed, p_i16_NumPatte, NEO_RGB + NEO_KHZ800);
-  m_pt_NeoPixel = new Adafruit_NeoPixel(1, 4, NEO_RGB + NEO_KHZ800);
-  m_u16_NbreLed = 1;
+  m_pt_NeoPixel = new Adafruit_NeoPixel(m_u16_NbreLed, p_i16_NumPatte, NEO_GRB + NEO_KHZ800);
 
   m_pt_NeoPixel->begin();
   m_pt_NeoPixel->clear();
@@ -33,7 +32,7 @@ bool GestionLedWS_t::Nouvelle_Valeur(uint16_t p_u16_numLed, uint32_t p_u32_Valeu
 
   m_pt_NeoPixel->setPixelColor(p_u16_numLed, p_u32_Valeur);
 
-  if(1)//(p_b_Actualiser == true)
+  if(p_b_Actualiser == true)
   {
     m_pt_NeoPixel->show();
   }

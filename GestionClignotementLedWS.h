@@ -33,6 +33,8 @@ public:
   //! Active la séquence n°x
   virtual void SetSequence(uint8_t p_u8_NumeroSequence);
 
+  virtual void ReglerIndexLed(uint8_t p_u8_IndexLed);
+
   //! methode statique utilisée par le timer logiciel dans le fonctionnement autonome
   static void StaticGetSequence(uint32_t arg1, void *ClassGestionLed);
 

@@ -14,6 +14,7 @@ typedef enum qualite_air_t
 typedef enum mode_operation_t
 {
   mode_extinction = 0,
+  mode_normal_debut,
   mode_normal,
   mode_continu,
   mode_stop_alamre,
@@ -31,6 +32,8 @@ void Machine_Etat_Generale(void);
 void acquerir_afficher();
 
 void acquerir();
+
+void Mode_Normal_Debut(void);
 
 void Mode_Normal(void);
 

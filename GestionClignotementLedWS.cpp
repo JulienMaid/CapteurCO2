@@ -131,3 +131,12 @@ void GestionClignotementLedWS::SetSequence(uint8_t p_u8_NumeroSequence)
 
 }
 
+void GestionClignotementLedWS::ReglerIndexLed(uint8_t p_u8_IndexLed)
+{
+  if(m_u8_IndexLed != p_u8_IndexLed)
+  {
+    m_pt_GestionLedWS->Nouvelle_Valeur(m_u8_IndexLed, HTMLColorCode::Black, true);
+
+    m_u8_IndexLed = p_u8_IndexLed;
+  }
+}

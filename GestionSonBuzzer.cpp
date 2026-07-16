@@ -24,7 +24,6 @@ GestionSonBuzzer::~GestionSonBuzzer()
 
 void GestionSonBuzzer::SetSequence(uint8_t p_u8_NumeroSequence)
 {
-  const uint8_t l_tu8_BuzzerSequenceDef[m_u8_SequenceLength] = { 0 };
   const uint8_t l_tu8_BuzzerSequence1[m_u8_SequenceLength] = { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0,
       0, 0, 0, 0 };
   const uint8_t l_tu8_BuzzerSequence2[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -53,10 +52,15 @@ void GestionSonBuzzer::SetSequence(uint8_t p_u8_NumeroSequence)
   l_ptu8_LedSequenceX = l_tu8_BuzzerSequence4;
   break;
   default:
-  l_ptu8_LedSequenceX = l_tu8_BuzzerSequenceDef;
   break;
   }
-
-  memcpy(m_ptu8_LedSequence, l_ptu8_LedSequenceX, m_u8_SequenceLength);
+  if(l_ptu8_LedSequenceX != nullptr)
+  {
+    memcpy(m_ptu8_LedSequence, l_ptu8_LedSequenceX, m_u8_SequenceLength);
+  }
+  else
+  {
+    ClearSequence();
+  }
 
 }

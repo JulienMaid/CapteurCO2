@@ -67,7 +67,6 @@ uint32_t GestionClignotementLed::GetPortLed(void)
 
 void GestionClignotementLed::SetSequence(uint8_t p_u8_NumeroSequence)
 {
-    const uint8_t l_tu8_LedSequenceDef[m_u8_SequenceLength] = { 0 };
     const uint8_t l_tu8_LedSequence1[m_u8_SequenceLength] = { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0,
         0, 0, 0, 0 };
     const uint8_t l_tu8_LedSequence2[m_u8_SequenceLength] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -96,12 +95,17 @@ void GestionClignotementLed::SetSequence(uint8_t p_u8_NumeroSequence)
     l_ptu8_LedSequenceX = l_tu8_LedSequence4;
     break;
   default:
-    l_ptu8_LedSequenceX = l_tu8_LedSequenceDef;
     break;
   }
 
-  memcpy(m_ptu8_LedSequence, l_ptu8_LedSequenceX, m_u8_SequenceLength);
-
+  if(l_ptu8_LedSequenceX != nullptr)
+  {
+    memcpy(m_ptu8_LedSequence, l_ptu8_LedSequenceX, m_u8_SequenceLength);
+  }
+  else
+  {
+    ClearSequence();
+  }
 }
 
 void GestionClignotementLed::StaticGetSequence(uint32_t arg1, void *ClassGestionLed)
