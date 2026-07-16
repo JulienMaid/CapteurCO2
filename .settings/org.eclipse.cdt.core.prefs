@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+environment/project/io.sloeber.core.sketch.0/append=true
+environment/project/io.sloeber.core.sketch.0/appendContributed=true
+environment/project/io.sloeber.core.sketch.0/compiler.c.elf.flags/delimiter=\:
+environment/project/io.sloeber.core.sketch.0/compiler.c.elf.flags/operation=replace
+environment/project/io.sloeber.core.sketch.0/compiler.c.elf.flags/value=${compiler.warning_flags} -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections,-Map,nom.map
+environment/project/io.sloeber.core.sketch.0/compiler.c.flags/delimiter=\:
+environment/project/io.sloeber.core.sketch.0/compiler.c.flags/operation=replace
+environment/project/io.sloeber.core.sketch.0/compiler.c.flags/value=-c -g -Os ${compiler.warning_flags} -std\=gnu11 -ffunction-sections -fdata-sections -MMD -flto -fno-fat-lto-objects -Wl,-Map,nom.map
+environment/project/io.sloeber.core.sketch.0/compiler.cpp.flags/delimiter=\:
+environment/project/io.sloeber.core.sketch.0/compiler.cpp.flags/operation=replace
+environment/project/io.sloeber.core.sketch.0/compiler.cpp.flags/value=-c -g -Os ${compiler.warning_flags} -std\=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Wno-error\=narrowing -MMD -flto -Wl,-Map,nom.map

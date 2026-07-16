@@ -22,19 +22,17 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/Adafruit_SSD1306}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/SPI/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/FastLED/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/Ticker}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/Adafruit-GFX-Library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/ArduinoOTA/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/SparkFun_SCD4x_Arduino_Library/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/Adafruit_BusIO}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/EEPROM/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/MsTimer2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/Adafruit_NeoPixel}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/SPI/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.374150845" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -43,19 +41,17 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/Adafruit_SSD1306}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/SPI/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/FastLED/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/Ticker}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/Adafruit-GFX-Library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/ArduinoOTA/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/SparkFun_SCD4x_Arduino_Library/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/Adafruit_BusIO}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/EEPROM/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/MsTimer2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/Adafruit_NeoPixel}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/SPI/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1086343728" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -64,19 +60,17 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/Adafruit_SSD1306}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/SPI/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/Wire/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/FastLED/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/Ticker}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/Adafruit-GFX-Library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/ArduinoOTA/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/SparkFun_SCD4x_Arduino_Library/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/Adafruit_BusIO}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/EEPROM/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/MsTimer2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/Adafruit_NeoPixel}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CapteurCO2/libraries/SPI/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.862569936" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -131,6 +125,10 @@
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/CapteurCO2"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

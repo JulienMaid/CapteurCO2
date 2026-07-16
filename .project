@@ -67,44 +67,9 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Adafruit_NeoPixel/1.15.1</locationURI>
 		</link>
 		<link>
-			<name>libraries/ArduinoJson</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoJson/7.4.1</locationURI>
-		</link>
-		<link>
-			<name>libraries/ArduinoOTA</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoOTA/1.1.1</locationURI>
-		</link>
-		<link>
-			<name>libraries/EEPROM</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.8.6/libraries/EEPROM</locationURI>
-		</link>
-		<link>
-			<name>libraries/FastLED</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/FastLED/3.9.20</locationURI>
-		</link>
-		<link>
 			<name>libraries/MsTimer2</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/MsTimer2/1.1.0</locationURI>
-		</link>
-		<link>
-			<name>libraries/SPI</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.8.6/libraries/SPI</locationURI>
-		</link>
-		<link>
-			<name>libraries/Ticker</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Ticker/4.4.0</locationURI>
-		</link>
-		<link>
-			<name>libraries/WiFi</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/WiFi/1.2.7</locationURI>
 		</link>
 		<link>
 			<name>libraries/Wire</name>

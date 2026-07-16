@@ -132,7 +132,7 @@ all: CapteurCO2
 CapteurCO2: $(HEX)
 	@echo 'Building target: $@'
 	@echo 'Printing size:'
-	"/home/julien/Sloeber/arduinoPlugin/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-size" -A "/home/julien/sloeber-workspace/CapteurCO2/Release/CapteurCO2.elf"
+	"/home/julien/Sloeber/arduinoPlugin/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-size" -A "/home/julien/sloeber-workspace/CapteurCO2/Release/CapteurCO2.elf" | "awk" -f size.awk
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -144,7 +144,7 @@ CapteurCO2: $(HEX)
 
 CapteurCO2.elf: $(LINK_OBJ) $(AR)
 	@echo 'Starting combiner'
-	"/home/julien/Sloeber/arduinoPlugin/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc" -w -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -mmcu=atmega328p   -o "/home/julien/sloeber-workspace/CapteurCO2/Release/CapteurCO2.elf"  $(LINK_OBJ)  $(AR) "-L/home/julien/sloeber-workspace/CapteurCO2/Release" -lm
+	"/home/julien/Sloeber/arduinoPlugin/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc" -w -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections,-Map,nom.map -mmcu=atmega328p   -o "/home/julien/sloeber-workspace/CapteurCO2/Release/CapteurCO2.elf"  $(LINK_OBJ)  $(AR) "-L/home/julien/sloeber-workspace/CapteurCO2/Release" -lm
 	@echo 'Finished building: $@'
 	@echo ' '
 
