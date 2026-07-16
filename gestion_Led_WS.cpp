@@ -32,7 +32,7 @@ bool GestionLedWS_t::Nouvelle_Valeur(uint16_t p_u16_numLed, uint32_t p_u32_Valeu
 
   m_pt_NeoPixel->setPixelColor(p_u16_numLed, p_u32_Valeur);
 
-  if(1)//(p_b_Actualiser == true)
+  if(p_b_Actualiser == true)
   {
     m_pt_NeoPixel->show();
   }
