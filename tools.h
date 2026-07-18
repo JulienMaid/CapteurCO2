@@ -22,8 +22,13 @@ typedef enum mode_operation_t
   mode_stop_alamre,
 } mode_operation_t;
 
-
-
+typedef enum mode_alarme_t
+{
+  alarme_off = 0,
+  alarme_fin_TempsON,
+  alarme_attention,
+  alarme_alerte,
+} mode_alarme_t;
 
 qualite_air_t Determiner_Qualite_Air(const float & p_f_tauxCO2);
 

@@ -7,8 +7,6 @@
 
 #include "tools.h"
 #include <Arduino.h>
-//#include "GestionClignotementLed.h"
-#include "GestionSonBuzzer.h"
 #include "GestionClignotementLedWS.h"
 #include "timer_sw.h"
 #include "DefinitionES.h"
@@ -24,8 +22,6 @@
 
 extern GestionLedWS_t * g_t_GestionMultiLedWS;
 extern GestionClignotementLedWS * g_t_ClignotementLedWS;
-//extern GestionClignotementLed g_t_ClignotementLedInterne;
-extern GestionSonBuzzer g_t_GestionBuzzer;
 extern SCD4x g_t_CapteurSCD41;
 extern Adafruit_SSD1306 g_t_EcranLCD;
 extern TimerEvent_t g_t_TimerTempoMesure;
@@ -34,10 +30,9 @@ extern TimerEvent_t g_t_TimerGestionGenerale;
 
 extern ConvertAnalogValue TensionBatterie;
 
-//extern mode_operation_t g_e_Etat_En_Cours;
-extern boolean g_e_Alarme_En_Cours;
+extern VariableTracee<mode_operation_t> g_t_EtatEnEcours;
+extern VariableTracee<uint16_t> g_t_ModeAlarme;
 
-extern VariableTracee<mode_operation_t> g_t_Etat_En_Ecours;
 
 qualite_air_t Determiner_Qualite_Air(const float & p_f_tauxCO2)
 {
@@ -137,9 +132,7 @@ void Mode_ON(void)
 {
   digitalWrite(CMD_ONOFF, 1);
 
-//  g_t_ClignotementLedInterne.Demarrer();
   g_t_ClignotementLedWS->Demarrer();
-//  g_t_GestionBuzzer.Demarrer();
 
   Serial.println("Mode ON");
 }
@@ -149,16 +142,14 @@ void Mode_OFF(void)
   digitalWrite(CMD_ONOFF, 0);
   g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Red, true);
 
-//  g_t_ClignotementLedInterne.Arreter();
   g_t_ClignotementLedWS->Arreter();
-//  g_t_GestionBuzzer.Arreter();
 
   Serial.println("Mode OFF");
 }
 
 void Mode_Stop_Alarme(void)
 {
-//  g_t_GestionBuzzer.ClearSequence();
+
 }
 
 ///////F:fonction faire la première mesure pour ne pas l'afficher car est à 0   /////////////////////////////////////
@@ -191,7 +182,7 @@ void acquerir_afficher()
   g_t_EcranLCD.print(taux_string);
   g_t_EcranLCD.print("%");
   g_t_EcranLCD.setTextSize(2);
-  g_t_EcranLCD.print("co2");
+  g_t_EcranLCD.print("CO2");
   g_t_EcranLCD.display();
 
   l_e_Qualite_Air = Determiner_Qualite_Air(taux_pourcent);
@@ -201,11 +192,21 @@ void acquerir_afficher()
   case Acceptable:
     g_t_ClignotementLedWS->ReglerLuminosite(64);
     g_t_ClignotementLedWS->SetSequence(1);
+
+    if(g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
+    {
+      g_t_ModeAlarme.EcrireValeur(alarme_off);
+    }
     break;
 
   case Mediocre:
     g_t_ClignotementLedWS->ReglerLuminosite(64);
     g_t_ClignotementLedWS->SetSequence(2);
+
+    if(g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
+    {
+      g_t_ModeAlarme.EcrireValeur(alarme_off);
+    }
     break;
 
   case Mauvaise:
@@ -214,7 +215,7 @@ void acquerir_afficher()
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
     {
-//    g_t_GestionBuzzer.SetSequence(2);
+      g_t_ModeAlarme.EcrireValeur(alarme_attention);
     }
     break;
 
@@ -224,7 +225,7 @@ void acquerir_afficher()
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
     {
-//    g_t_GestionBuzzer.SetSequence(3);
+      g_t_ModeAlarme.EcrireValeur(alarme_attention);
     }
     break;
 
@@ -234,7 +235,7 @@ void acquerir_afficher()
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
     {
-//    g_t_GestionBuzzer.SetSequence(4);
+      g_t_ModeAlarme.EcrireValeur(alarme_alerte);
     }
     break;
 
