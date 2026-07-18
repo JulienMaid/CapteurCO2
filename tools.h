@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #define DEBUG 1
 
 typedef enum qualite_air_t
@@ -44,3 +46,10 @@ void Mode_ON(void);
 void Mode_OFF(void);
 
 void Mode_Stop_Alarme(void);
+
+void Icone_Etat_Piles(uint8_t p_u8_Valeur);
+
+void Symbole_Mode_En_Cours(mode_operation_t p_e_ModeEnCours);
+
+void Afficher_Temps_ON(uint8_t p_u8_MinutesON);
+

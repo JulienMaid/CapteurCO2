@@ -243,3 +243,49 @@ void acquerir_afficher()
   l_e_Qualite_Air_Prec = l_e_Qualite_Air;
 
 }
+
+///////F:fonction qui génère l'icone état piles////////////////////////////////////////////////////////////////
+void Icone_Etat_Piles(uint8_t p_u8_Valeur)
+{
+  g_t_EcranLCD.drawRoundRect(108,22, 20, 10,3, WHITE);
+  g_t_EcranLCD.fillRect(110,24, 16, 6, WHITE);
+  g_t_EcranLCD.fillRect(110,24,p_u8_Valeur,6,BLACK);
+}
+
+///////F:fonction qui génère le symbole du mode en cours////////////////////////////////////////////////////////////////
+void Symbole_Mode_En_Cours(mode_operation_t p_e_ModeEnCours)
+{
+  g_t_EcranLCD.drawRoundRect(90,20, 14, 12,6, WHITE);
+  g_t_EcranLCD.setCursor(94, 22);
+  g_t_EcranLCD.setTextSize(1);
+  g_t_EcranLCD.setTextColor(WHITE);
+
+  switch(p_e_ModeEnCours)
+  {
+  case mode_normal:
+    g_t_EcranLCD.println("N");
+    break;
+  case mode_continu:
+    g_t_EcranLCD.println("C");
+    break;
+  default:
+    g_t_EcranLCD.println("?");
+    break;
+  }
+}
+
+void Afficher_Temps_ON(uint8_t p_u8_MinutesON)
+{
+
+  for(auto index=0; index<15; index++)
+  {
+    if(index<p_u8_MinutesON)
+    {
+      g_t_EcranLCD.fillRect(1+5*index,24, 4, 8, WHITE);
+    }
+    else
+    {
+      g_t_EcranLCD.drawRoundRect(1+5*index,24, 4, 8,1, WHITE);
+    }
+  }
+}
