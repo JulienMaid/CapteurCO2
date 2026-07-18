@@ -1,6 +1,6 @@
 #pragma once
 
-
+#define DEBUG 1
 
 typedef enum qualite_air_t
 {

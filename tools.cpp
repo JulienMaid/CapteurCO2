@@ -176,7 +176,8 @@ void acquerir_afficher()
   unsigned int taux_co2; // sortie du capteur  en ppm
   float taux_pourcent = 0.0; // taux de CO2 en % en type float
   char taux_string[4];// taux de CO2 en type string pour l'afficheur
-  qualite_air_t l_e_Qualite_Air;
+  qualite_air_t l_e_Qualite_Air = Acceptable;
+  static qualite_air_t l_e_Qualite_Air_Prec = Acceptable;
 
   // acquerir taux de CO2
   taux_co2=(int)g_t_CapteurSCD41.getCO2();
@@ -210,21 +211,35 @@ void acquerir_afficher()
   case Mauvaise:
     g_t_ClignotementLedWS->ReglerLuminosite(128);
     g_t_ClignotementLedWS->SetSequence(3);
+
+    if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
+    {
 //    g_t_GestionBuzzer.SetSequence(2);
+    }
     break;
 
   case Tres_Mauvaise:
     g_t_ClignotementLedWS->ReglerLuminosite(200);
     g_t_ClignotementLedWS->SetSequence(4);
+
+    if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
+    {
 //    g_t_GestionBuzzer.SetSequence(3);
+    }
     break;
 
   case Danger:
     g_t_ClignotementLedWS->ReglerLuminosite(200);
     g_t_ClignotementLedWS->SetSequence(5);
+
+    if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
+    {
 //    g_t_GestionBuzzer.SetSequence(4);
+    }
     break;
 
   }
+
+  l_e_Qualite_Air_Prec = l_e_Qualite_Air;
 
 }

@@ -38,13 +38,47 @@ TimerEvent_t g_t_TimerGestionGenerale;
 //ConvertAnalogValue TensionBatterie(0, 0, 0.0, 10.0, 0, 1023);
 
 
-VariableTracee<uint16_t> g_t_Etat_En_Ecours(mode_extinction, "g_t_Etat_En_Ecours", true);
-//VariableTracee<mode_operation_t> g_t_Etat_En_Ecours(mode_extinction, "g_t_Etat_En_Ecours", true);
+VariableTracee<uint16_t> g_t_Etat_En_Ecours(mode_extinction, "g_t_Etat_En_Ecours", DEBUG);
+//VariableTracee<mode_operation_t> g_t_Etat_En_Ecours(mode_extinction, "g_t_Etat_En_Ecours", DEBUG);
 boolean g_e_Alarme_En_Cours = false;
 
 void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg);
 
 ///////F: fonction SETUP//////////////////////////////////////////////////////////////////////////////////////////
+void loop()
+{
+  uint16_t l_u16_TensionBatterieInt = 1000;
+
+  if(g_t_TimerTempoMesure.IsTop() == true)
+  {
+    Serial.print("Etat:");
+    Serial.println(g_t_Etat_En_Ecours.LireValeur());
+
+    acquerir_afficher();
+
+//    l_u16_TensionBatterieInt = (uint16_t)(10.0*TensionBatterie.GetConvertedValue(analogRead(0)));
+
+    if(l_u16_TensionBatterieInt < 65)
+    {
+      // Extinction immédiate
+      g_t_Etat_En_Ecours.EcrireValeur(mode_extinction);
+    }
+    else if(l_u16_TensionBatterieInt < 74)
+    {
+// Batterie à 50%
+    }
+    else
+    {
+// Batterie pleine
+    }
+
+  }
+
+  Machine_Etat_Generale();
+
+  icone_etat_piles();
+}
+
 void setup()
 {
   MsTimer2 :: set (DEC_TIMESTAMP, Inc_Timer); //execution de la routine "alarme_cligno" toutes les 100ms
@@ -98,52 +132,22 @@ void setup()
   g_t_ClignotementLedWS->ReglerLuminosite(64);
 
 
-  // Pour débug..
-//  g_t_Etat_En_Ecours.EcrireValeur(mode_normal_debut);
+  //Pour débug..
+#if DEBUG == 1
+  g_t_Etat_En_Ecours.EcrireValeur(mode_normal_debut);
+#endif
 }
 
 ///////F: fonction PRINCIPALE//////////////////////////////////////////////////////////////////////////////////////
-void loop()
-{
-  uint16_t l_u16_TensionBatterieInt = 1000;
-
-  if(g_t_TimerTempoMesure.IsTop() == true)
-  {
-    Serial.print("Etat:");
-    Serial.println(g_t_Etat_En_Ecours.LireValeur());
-
-    acquerir_afficher();
-
-//    l_u16_TensionBatterieInt = (uint16_t)(10.0*TensionBatterie.GetConvertedValue(analogRead(0)));
-
-    if(l_u16_TensionBatterieInt < 65)
-    {
-      // Extinction immédiate
-      g_t_Etat_En_Ecours.EcrireValeur(mode_extinction);
-    }
-    else if(l_u16_TensionBatterieInt < 74)
-    {
-// Batterie à 50%
-    }
-    else
-    {
-// Batterie pleine
-    }
-
-  }
-
-  Machine_Etat_Generale();
-}
-
 void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
 {
   static uint32_t l_u32_TempsEcoule = 0;
   static uint16_t l_u16_TempsAppuieBP = 0;
   static uint16_t l_u16_TempsRelacheBP = 0;
-  static VariableTracee<uint16_t> l_b_EtatBP(1, "l_b_EtatBP", true);
+  static VariableTracee<uint16_t> l_b_EtatBP(1, "l_b_EtatBP", DEBUG);
   TimerEvent_t * l_pt_TimerGestionBP = (TimerEvent_t *)p_v_arg;
 //  static uint8_t l_u8_NbreAppui = 0;
-  static VariableTracee<uint16_t> l_u8_NbreAppui(0, "l_u8_NbreAppui", true);
+  static VariableTracee<uint16_t> l_u8_NbreAppui(0, "l_u8_NbreAppui", DEBUG);
 
 
   l_b_EtatBP.EcrireValeur(digitalRead(ENTREE_BP));
@@ -300,4 +304,30 @@ void Machine_Etat_Generale(void)
 
 }
 
+///////F:fonction qui génère l'icone état piles////////////////////////////////////////////////////////////////
+ void icone_etat_piles()
+{
+   uint8_t Nblack= 8;
 
+  g_t_EcranLCD.drawRoundRect(108,0, 20, 10,3, WHITE);
+  g_t_EcranLCD.fillRect(110,2, 16, 6, WHITE);
+//  Ncan=analogRead(kVbat);
+//  // SI Vbat<6,8V (822) rectangle rempli de noir
+// if(Ncan<=seuil_piles_haut)Nblack=16;
+// // à Vbat=7,96V (962)jauge à moitié (Demi-charge)
+// if (Ncan>seuil_piles_haut and Ncan<demi_charge) Nblack=map(Ncan,seuil_piles_haut,demi_charge,16,8);
+// // à Vbat=8,1V  jauge pleine (de blanc)
+// if (Ncan>demi_charge) Nblack=map(Ncan,demi_charge,pleine_charge,8,0);
+ g_t_EcranLCD.fillRect(110,2,Nblack,6,BLACK);
+}
+
+///////F:fonction qui génère le symbole du mode en cours////////////////////////////////////////////////////////////////
+ void symbole_mode_encours()
+{
+   g_t_EcranLCD.drawRoundRect(114,20, 14, 12,6, WHITE);
+   g_t_EcranLCD.setCursor(118, 22);
+   g_t_EcranLCD.setTextSize(1);
+   g_t_EcranLCD.setTextColor(WHITE);
+  /*if(mode_normal==1)display.println("N");
+  else*/ g_t_EcranLCD.println("C");
+}
