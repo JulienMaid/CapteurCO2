@@ -35,7 +35,7 @@ TimerEvent_t g_t_TimerGestionGenerale;
 
 
 VariableTracee<uint16_t> g_t_EtatEnEcours(mode_extinction, "g_t_Etat_En_Ecours", DEBUG);
-VariableTracee<uint16_t> g_t_ModeAlarme(alarme_off, "g_t_ModeAlarme", DEBUG);
+VariableTracee<uint16_t> g_t_ModeAlarme(silence, "g_t_ModeAlarme", DEBUG);
 static uint32_t g_u32_TempsEcoule = 0;
 static constexpr uint32_t g_u32_TempsMaxON = 900000;
 
@@ -206,6 +206,67 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
     }
   }
   g_u32_TempsEcoule += l_u16_DeltaTemps;
+
+// Gestion alarmes
+  if(g_t_ModeAlarme.LireValeur() == alarme_off)
+  {
+    g_t_ModeAlarme.EcrireValeur(silence);
+    digitalWrite(CMD_BUZZER, 0);
+  }
+  else if(g_t_ModeAlarme.LireValeur() != silence)
+  {
+    static uint8_t Temps100ms = 0;
+
+    Temps100ms ^= 1; // passe à zero toutes les 100ms
+
+    switch(g_t_ModeAlarme.LireValeur())
+    {
+    case alarme_fin_TempsON:
+    case alarme_attention:
+      static uint8_t Temps1s=10;
+
+      if(Temps100ms == 0)
+      {
+        Temps1s -= 1;
+
+        if(Temps1s == 0)
+        {
+          Temps1s = 10;
+          digitalWrite(CMD_BUZZER, 1);
+        }
+      }
+      else
+      {
+        digitalWrite(CMD_BUZZER, 0);
+      }
+
+      break;
+    case alarme_alerte:
+      static uint8_t Temps500ms=5;
+      static bool l_b_ValeurBuzzer = 0;
+
+      if(Temps100ms == 0)
+      {
+        Temps500ms -= 1;
+
+        if(Temps500ms == 0)
+        {
+          Temps500ms = 5;
+
+          l_b_ValeurBuzzer ^= 1;
+          digitalWrite(CMD_BUZZER, l_b_ValeurBuzzer);
+        }
+      }
+
+      break;
+    default:
+      break;
+    }
+  }
+
+
+
+
 }
 
 void Machine_Etat_Generale(void)

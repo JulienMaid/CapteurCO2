@@ -195,7 +195,7 @@ void acquerir_afficher()
 
     if(g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
     {
-      g_t_ModeAlarme.EcrireValeur(alarme_off);
+//      g_t_ModeAlarme.EcrireValeur(alarme_off);
     }
     break;
 
@@ -205,7 +205,7 @@ void acquerir_afficher()
 
     if(g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
     {
-      g_t_ModeAlarme.EcrireValeur(alarme_off);
+//      g_t_ModeAlarme.EcrireValeur(alarme_off);
     }
     break;
 
@@ -294,6 +294,7 @@ uint8_t Tester_Batterie(void)
 {
   uint16_t l_u16_TensionBatterieInt = 0;
   uint8_t l_u8_NiveauBatterie = 0;
+  uint8_t l_u8_IndexLED = 0;
 
   l_u16_TensionBatterieInt = ((uint16_t)10*(uint16_t)analogRead(ANALOG_BATTERIE))/102;
 
@@ -302,13 +303,37 @@ uint8_t Tester_Batterie(void)
     // Extinction immédiate
 #if DEBUG != 1
     g_t_EtatEnEcours.EcrireValeur(mode_extinction);
+#else
+    if(g_t_EtatEnEcours.LireValeur() == mode_continu)
+    {
+      l_u8_IndexLED = 0;
+    }
+    else
+    {
+      l_u8_IndexLED = 1;
+    }
+
+    g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_IndexLED, HTMLColorCode::Red, true);
+
+    g_t_ModeAlarme.EcrireValeur(alarme_alerte);
 #endif
     l_u8_NiveauBatterie = 16;
   }
   else if(l_u16_TensionBatterieInt < 67)
   {
     l_u8_NiveauBatterie = 12;
-    g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Red, true);
+
+    if(g_t_EtatEnEcours.LireValeur() == mode_continu)
+    {
+      l_u8_IndexLED = 0;
+    }
+    else
+    {
+      l_u8_IndexLED = 1;
+    }
+
+    g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_IndexLED, HTMLColorCode::Red, true);
+
     g_t_ModeAlarme.EcrireValeur(alarme_alerte);
   }
   else if(l_u16_TensionBatterieInt < 69)

@@ -24,7 +24,8 @@ typedef enum mode_operation_t
 
 typedef enum mode_alarme_t
 {
-  alarme_off = 0,
+  silence = 0,
+  alarme_off,
   alarme_fin_TempsON,
   alarme_attention,
   alarme_alerte,
