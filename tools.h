@@ -58,3 +58,4 @@ void Symbole_Mode_En_Cours(mode_operation_t p_e_ModeEnCours);
 
 void Afficher_Temps_ON(uint8_t p_u8_MinutesON);
 
+uint8_t Tester_Batterie(void);

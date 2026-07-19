@@ -277,7 +277,6 @@ void Symbole_Mode_En_Cours(mode_operation_t p_e_ModeEnCours)
 
 void Afficher_Temps_ON(uint8_t p_u8_MinutesON)
 {
-
   for(auto index=0; index<15; index++)
   {
     if(index<p_u8_MinutesON)
@@ -289,4 +288,45 @@ void Afficher_Temps_ON(uint8_t p_u8_MinutesON)
       g_t_EcranLCD.drawRoundRect(1+5*index,24, 4, 8,1, WHITE);
     }
   }
+}
+
+uint8_t Tester_Batterie(void)
+{
+  uint16_t l_u16_TensionBatterieInt = 0;
+  uint8_t l_u8_NiveauBatterie = 0;
+
+  l_u16_TensionBatterieInt = ((uint16_t)10*(uint16_t)analogRead(ANALOG_BATTERIE))/102;
+
+  if(l_u16_TensionBatterieInt < 65)
+  {
+    // Extinction immédiate
+#if DEBUG != 1
+    g_t_EtatEnEcours.EcrireValeur(mode_extinction);
+#endif
+    l_u8_NiveauBatterie = 16;
+  }
+  else if(l_u16_TensionBatterieInt < 67)
+  {
+    l_u8_NiveauBatterie = 12;
+    g_t_GestionMultiLedWS->Nouvelle_Valeur(1, HTMLColorCode::Red, true);
+    g_t_ModeAlarme.EcrireValeur(alarme_alerte);
+  }
+  else if(l_u16_TensionBatterieInt < 69)
+  {
+    l_u8_NiveauBatterie = 12;
+  }
+  else if(l_u16_TensionBatterieInt < 73)
+  {
+    l_u8_NiveauBatterie = 8;
+  }
+  else if(l_u16_TensionBatterieInt < 78)
+  {
+    l_u8_NiveauBatterie = 4;
+  }
+  else
+  {
+    l_u8_NiveauBatterie = 0;
+  }
+
+  return l_u8_NiveauBatterie;
 }

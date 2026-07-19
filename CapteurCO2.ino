@@ -47,44 +47,23 @@ void loop()
 {
   uint16_t l_u16_TensionBatterieInt = 1000;
   uint8_t l_u8_TempsONRestant = 0;
+  uint8_t l_u8_NiveauBatterie = 0;
 
   if(g_t_TimerTempoMesure.IsTop() == true)
   {
-    Serial.print("Etat:");
-    Serial.println(g_t_EtatEnEcours.LireValeur());
-
+    l_u8_NiveauBatterie = Tester_Batterie();
 
     acquerir_afficher();
 
-    Icone_Etat_Piles(8);
+    Icone_Etat_Piles(l_u8_NiveauBatterie);
 
     Symbole_Mode_En_Cours(g_t_EtatEnEcours.LireValeur());
 
     l_u8_TempsONRestant = (uint8_t)((g_u32_TempsMaxON - g_u32_TempsEcoule)/(uint32_t)60000)+1;
 
-   Serial.println(l_u8_TempsONRestant);
-
     Afficher_Temps_ON(l_u8_TempsONRestant);
 
     g_t_EcranLCD.display();
-
-
-//    l_u16_TensionBatterieInt = (uint16_t)(10.0*TensionBatterie.GetConvertedValue(analogRead(0)));
-
-    if(l_u16_TensionBatterieInt < 65)
-    {
-      // Extinction immédiate
-      g_t_EtatEnEcours.EcrireValeur(mode_extinction);
-    }
-    else if(l_u16_TensionBatterieInt < 74)
-    {
-// Batterie à 50%
-    }
-    else
-    {
-// Batterie pleine
-    }
-
   }
 
   Machine_Etat_Generale();
@@ -99,7 +78,6 @@ void setup()
   Serial.begin(115200);
   Serial.println("CapteurCO2");
 
-//  Init_Trace_Debug();
   g_t_TimerGestionGenerale.Init(GestionTimningGeneral, 50, Periodic_Timer, &g_t_TimerGestionGenerale);
   g_t_TimerGestionGenerale.Start();
 
@@ -127,11 +105,8 @@ void setup()
 
   g_t_EcranLCD.display();
 
-
   // Initialisation capteur SCD41
   g_t_CapteurSCD41.begin();
-
-  acquerir();
 
   g_t_TimerTempoMesure.Init(NULL, 5000);
   g_t_TimerTempoMesure.Start();
@@ -151,35 +126,17 @@ void setup()
 void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
 {
   static uint16_t l_u16_TempsAppuieBP = 0;
-  static uint16_t l_u16_TempsRelacheBP = 0;
-  static VariableTracee<uint16_t> l_b_EtatBP(1, "l_b_EtatBP", DEBUG);
+  bool l_b_EtatBP = 0;
   TimerEvent_t * l_pt_TimerGestionBP = (TimerEvent_t *)p_v_arg;
-  static VariableTracee<uint16_t> l_u8_NbreAppui(0, "l_u8_NbreAppui", DEBUG);
+  uint16_t l_u16_DeltaTemps = l_pt_TimerGestionBP->GetValue();
 
+  l_b_EtatBP = digitalRead(ENTREE_BP);
 
-  l_b_EtatBP.EcrireValeur(digitalRead(ENTREE_BP));
-
-  if(l_b_EtatBP.LireValeur() == 1)
+  if(l_b_EtatBP == 1)
   {
-    if(l_u16_TempsRelacheBP != 0)
-    {
-      l_u16_TempsAppuieBP = 0;
-      l_u16_TempsRelacheBP = 0;
-    }
-
-    if(l_u8_NbreAppui.LireValeur() == 0)
-    {
-      l_u8_NbreAppui.EcrireValeur(1);
-    }
-    else if((l_u16_TempsRelacheBP < 200) && (l_u16_TempsRelacheBP != 0))
-    {
-      l_u8_NbreAppui.EcrireValeur(l_u8_NbreAppui.LireValeur() + 1);
-    }
-    l_u16_TempsRelacheBP = 0;
-
     if(l_u16_TempsAppuieBP < 0xffff)
     {
-      l_u16_TempsAppuieBP += l_pt_TimerGestionBP->GetValue();
+      l_u16_TempsAppuieBP += l_u16_DeltaTemps;
       Serial.println(l_u16_TempsAppuieBP);
     }
 
@@ -202,22 +159,6 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
   {
     digitalWrite(CMD_LED_BOUTON,0);
 
-    if(l_u8_NbreAppui.LireValeur() >= 3)
-    {
-      g_t_EtatEnEcours.EcrireValeur(mode_continu);
-    }
-
-    if(l_u16_TempsRelacheBP > 1000)
-    {
-      l_u8_NbreAppui.EcrireValeur(0);
-    }
-
-    if(l_u16_TempsRelacheBP < 0xffff)
-    {
-      l_u16_TempsRelacheBP += l_pt_TimerGestionBP->GetValue();
-    }
-
-
     if((l_u16_TempsAppuieBP > 100) && (l_u16_TempsAppuieBP < 1000))
     {
       // Couper Alarme si ON
@@ -226,14 +167,12 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       // Remettre 15 min de temps ON si mode normal
       if(g_t_EtatEnEcours.LireValeur() == mode_normal)
       {
-        Serial.println("Remise 0");
         g_t_EtatEnEcours.EcrireValeur(mode_normal_debut);
         g_u32_TempsEcoule = 0;
       }
     }
 
     l_u16_TempsAppuieBP = 0;
-
   }
 
   if(g_t_EtatEnEcours.LireValeur() != mode_extinction)
@@ -266,7 +205,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       }
     }
   }
-  g_u32_TempsEcoule += l_pt_TimerGestionBP->GetValue();
+  g_u32_TempsEcoule += l_u16_DeltaTemps;
 }
 
 void Machine_Etat_Generale(void)
