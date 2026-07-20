@@ -30,7 +30,7 @@ extern TimerEvent_t g_t_TimerGestionGenerale;
 
 extern ConvertAnalogValue TensionBatterie;
 
-extern VariableTracee<mode_operation_t> g_t_EtatEnEcours;
+extern mode_operation_t g_e_EtatEnEcours;
 extern VariableTracee<uint16_t> g_t_ModeAlarme;
 
 
@@ -183,7 +183,7 @@ void acquerir_afficher()
   g_t_EcranLCD.print("%");
   g_t_EcranLCD.setTextSize(2);
   g_t_EcranLCD.print("CO2");
-  g_t_EcranLCD.display();
+//  g_t_EcranLCD.display();
 
   l_e_Qualite_Air = Determiner_Qualite_Air(taux_pourcent);
 
@@ -193,9 +193,10 @@ void acquerir_afficher()
     g_t_ClignotementLedWS->ReglerLuminosite(64);
     g_t_ClignotementLedWS->SetSequence(1);
 
-    if(g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
+    if((g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
+        && (g_t_ModeAlarme.LireValeur() != alarme_batterie_faible))
     {
-//      g_t_ModeAlarme.EcrireValeur(alarme_off);
+      g_t_ModeAlarme.EcrireValeur(alarme_off);
     }
     break;
 
@@ -203,9 +204,10 @@ void acquerir_afficher()
     g_t_ClignotementLedWS->ReglerLuminosite(64);
     g_t_ClignotementLedWS->SetSequence(2);
 
-    if(g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
+    if((g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
+        && (g_t_ModeAlarme.LireValeur() != alarme_batterie_faible))
     {
-//      g_t_ModeAlarme.EcrireValeur(alarme_off);
+      g_t_ModeAlarme.EcrireValeur(alarme_off);
     }
     break;
 
@@ -215,7 +217,10 @@ void acquerir_afficher()
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
     {
-      g_t_ModeAlarme.EcrireValeur(alarme_attention);
+      if(g_t_ModeAlarme.LireValeur() != alarme_batterie_faible)
+      {
+        g_t_ModeAlarme.EcrireValeur(alarme_attention);
+      }
     }
     break;
 
@@ -225,7 +230,10 @@ void acquerir_afficher()
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
     {
-      g_t_ModeAlarme.EcrireValeur(alarme_attention);
+      if(g_t_ModeAlarme.LireValeur() != alarme_batterie_faible)
+      {
+        g_t_ModeAlarme.EcrireValeur(alarme_attention);
+      }
     }
     break;
 
@@ -235,7 +243,10 @@ void acquerir_afficher()
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
     {
-      g_t_ModeAlarme.EcrireValeur(alarme_alerte);
+      if(g_t_ModeAlarme.LireValeur() != alarme_batterie_faible)
+      {
+        g_t_ModeAlarme.EcrireValeur(alarme_alerte);
+      }
     }
     break;
 
@@ -249,8 +260,8 @@ void acquerir_afficher()
 void Icone_Etat_Piles(uint8_t p_u8_Valeur)
 {
   g_t_EcranLCD.drawRoundRect(108,22, 20, 10,3, WHITE);
-  g_t_EcranLCD.fillRect(110,24, 16, 6, WHITE);
-  g_t_EcranLCD.fillRect(110,24,p_u8_Valeur,6,BLACK);
+  g_t_EcranLCD.fillRect(110,24, 16, 6, BLACK);
+  g_t_EcranLCD.fillRect(110,24,p_u8_Valeur,6, WHITE);
 }
 
 ///////F:fonction qui génère le symbole du mode en cours////////////////////////////////////////////////////////////////
@@ -302,9 +313,9 @@ uint8_t Tester_Batterie(void)
   {
     // Extinction immédiate
 #if DEBUG != 1
-    g_t_EtatEnEcours.EcrireValeur(mode_extinction);
+    g_e_EtatEnEcours = mode_extinction;
 #else
-    if(g_t_EtatEnEcours.LireValeur() == mode_continu)
+    if(g_e_EtatEnEcours == mode_continu)
     {
       l_u8_IndexLED = 0;
     }
@@ -315,15 +326,15 @@ uint8_t Tester_Batterie(void)
 
     g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_IndexLED, HTMLColorCode::Red, true);
 
-    g_t_ModeAlarme.EcrireValeur(alarme_alerte);
+    g_t_ModeAlarme.EcrireValeur(alarme_batterie_faible);
 #endif
-    l_u8_NiveauBatterie = 16;
+    l_u8_NiveauBatterie = 0;
   }
   else if(l_u16_TensionBatterieInt < 67)
   {
-    l_u8_NiveauBatterie = 12;
+    l_u8_NiveauBatterie = 0;
 
-    if(g_t_EtatEnEcours.LireValeur() == mode_continu)
+    if(g_e_EtatEnEcours == mode_continu)
     {
       l_u8_IndexLED = 0;
     }
@@ -334,11 +345,11 @@ uint8_t Tester_Batterie(void)
 
     g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_IndexLED, HTMLColorCode::Red, true);
 
-    g_t_ModeAlarme.EcrireValeur(alarme_alerte);
+    g_t_ModeAlarme.EcrireValeur(alarme_batterie_faible);
   }
   else if(l_u16_TensionBatterieInt < 69)
   {
-    l_u8_NiveauBatterie = 12;
+    l_u8_NiveauBatterie = 4;
   }
   else if(l_u16_TensionBatterieInt < 73)
   {
@@ -346,11 +357,11 @@ uint8_t Tester_Batterie(void)
   }
   else if(l_u16_TensionBatterieInt < 78)
   {
-    l_u8_NiveauBatterie = 4;
+    l_u8_NiveauBatterie = 12;
   }
   else
   {
-    l_u8_NiveauBatterie = 0;
+    l_u8_NiveauBatterie = 16;
   }
 
   return l_u8_NiveauBatterie;

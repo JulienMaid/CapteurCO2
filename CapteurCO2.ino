@@ -34,7 +34,8 @@ TimerEvent_t g_t_TimerGestionGenerale;
 //ConvertAnalogValue TensionBatterie(0, 0, 0.0, 10.0, 0, 1023);
 
 
-VariableTracee<uint16_t> g_t_EtatEnEcours(mode_extinction, "g_t_Etat_En_Ecours", DEBUG);
+//VariableTracee<uint16_t> g_e_EtatEnEcours(mode_extinction, "g_t_Etat_En_Ecours", DEBUG);
+mode_operation_t g_e_EtatEnEcours = mode_extinction;
 VariableTracee<uint16_t> g_t_ModeAlarme(silence, "g_t_ModeAlarme", DEBUG);
 static uint32_t g_u32_TempsEcoule = 0;
 static constexpr uint32_t g_u32_TempsMaxON = 900000;
@@ -57,7 +58,7 @@ void loop()
 
     Icone_Etat_Piles(l_u8_NiveauBatterie);
 
-    Symbole_Mode_En_Cours(g_t_EtatEnEcours.LireValeur());
+    Symbole_Mode_En_Cours(g_e_EtatEnEcours);
 
     l_u8_TempsONRestant = (uint8_t)((g_u32_TempsMaxON - g_u32_TempsEcoule)/(uint32_t)60000)+1;
 
@@ -119,7 +120,7 @@ void setup()
 
   //Pour débug..
 #if DEBUG == 1
-  g_t_EtatEnEcours.EcrireValeur(mode_normal_debut);
+  g_e_EtatEnEcours = mode_normal_debut;
 #endif
 }
 
@@ -145,7 +146,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       if(l_u16_TempsAppuieBP > 1000)
       {
         //ACTIVER MODE_ON
-        g_t_EtatEnEcours.EcrireValeur(mode_normal_debut);
+        g_e_EtatEnEcours = mode_normal_debut;
         digitalWrite(CMD_LED_BOUTON,1);
       }
     }
@@ -165,9 +166,9 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       g_t_ModeAlarme.EcrireValeur(alarme_off);
 
       // Remettre 15 min de temps ON si mode normal
-      if(g_t_EtatEnEcours.LireValeur() == mode_normal)
+      if(g_e_EtatEnEcours == mode_normal)
       {
-        g_t_EtatEnEcours.EcrireValeur(mode_normal_debut);
+        g_e_EtatEnEcours = mode_normal_debut;
         g_u32_TempsEcoule = 0;
       }
     }
@@ -175,31 +176,31 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
     l_u16_TempsAppuieBP = 0;
   }
 
-  if(g_t_EtatEnEcours.LireValeur() != mode_extinction)
+  if(g_e_EtatEnEcours != mode_extinction)
   {
     if(l_u16_TempsAppuieBP > 2000)
     {
-      g_t_EtatEnEcours.EcrireValeur(mode_continu);
+      g_e_EtatEnEcours = mode_continu;
     }
 
     if(l_u16_TempsAppuieBP > 4000)
     {
       //ACTIVER MODE OFF
-      g_t_EtatEnEcours.EcrireValeur(mode_extinction);
+      g_e_EtatEnEcours = mode_extinction;
     }
   }
 
-  if(g_t_EtatEnEcours.LireValeur() == mode_normal)
+  if(g_e_EtatEnEcours == mode_normal)
   {
     if(g_u32_TempsEcoule > g_u32_TempsMaxON)
     {
       // Si Mode normal, extinction car allumé depuis 15min.
-        g_t_EtatEnEcours.EcrireValeur(mode_extinction);
+        g_e_EtatEnEcours = mode_extinction;
     }
     else if(g_u32_TempsEcoule > (g_u32_TempsMaxON-60000))
     {
       // Si Mode normal, alarme pour prévenir extinction prochain.
-      if(g_t_EtatEnEcours.LireValeur() == mode_normal)
+      if(g_e_EtatEnEcours == mode_normal)
       {
         g_t_ModeAlarme.EcrireValeur(alarme_fin_TempsON);
       }
@@ -242,6 +243,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
 
       break;
     case alarme_alerte:
+    case alarme_batterie_faible:
       static uint8_t Temps500ms=5;
       static bool l_b_ValeurBuzzer = 0;
 
@@ -274,19 +276,19 @@ void Machine_Etat_Generale(void)
   static mode_operation_t g_e_Etat_Precedent = mode_extinction;
 
 
-  if(((g_t_EtatEnEcours.LireValeur() != g_e_Etat_Precedent))
-      || (g_t_EtatEnEcours.LireValeur() == mode_normal_debut))
+  if(((g_e_EtatEnEcours != g_e_Etat_Precedent))
+      || (g_e_EtatEnEcours == mode_normal_debut))
   {
-    if((g_e_Etat_Precedent == mode_extinction) && (g_t_EtatEnEcours.LireValeur() != mode_extinction))
+    if((g_e_Etat_Precedent == mode_extinction) && (g_e_EtatEnEcours != mode_extinction))
     {
       Mode_ON();
     }
-    else if((g_e_Etat_Precedent != mode_extinction) && (g_t_EtatEnEcours.LireValeur() == mode_extinction))
+    else if((g_e_Etat_Precedent != mode_extinction) && (g_e_EtatEnEcours == mode_extinction))
     {
       Mode_OFF();
     }
 
-    if(g_t_EtatEnEcours.LireValeur() == mode_normal_debut)
+    if(g_e_EtatEnEcours == mode_normal_debut)
     {
       Mode_Normal_Debut();
 
@@ -294,15 +296,15 @@ void Machine_Etat_Generale(void)
       {
         Mode_Normal();
       }
-      g_e_Etat_Precedent = g_t_EtatEnEcours.LireValeur();
-      g_t_EtatEnEcours.EcrireValeur(mode_normal);
+      g_e_Etat_Precedent = g_e_EtatEnEcours;
+      g_e_EtatEnEcours = mode_normal;
     }
-    else if(g_t_EtatEnEcours.LireValeur() == mode_continu)
+    else if(g_e_EtatEnEcours == mode_continu)
     {
       Mode_Continu();
     }
 
-    g_e_Etat_Precedent = g_t_EtatEnEcours.LireValeur();
+    g_e_Etat_Precedent = g_e_EtatEnEcours;
 
   }
 

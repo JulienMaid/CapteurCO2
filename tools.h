@@ -29,6 +29,7 @@ typedef enum mode_alarme_t
   alarme_fin_TempsON,
   alarme_attention,
   alarme_alerte,
+  alarme_batterie_faible,
 } mode_alarme_t;
 
 qualite_air_t Determiner_Qualite_Air(const float & p_f_tauxCO2);
