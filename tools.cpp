@@ -193,10 +193,10 @@ void acquerir_afficher()
     g_t_ClignotementLedWS->ReglerLuminosite(64);
     g_t_ClignotementLedWS->SetSequence(1);
 
-    if((g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
-        && (g_t_ModeAlarme.LireValeur() != alarme_batterie_faible))
+    if((g_t_ModeAlarme != alarme_fin_TempsON)
+        && (g_t_ModeAlarme != alarme_batterie_faible))
     {
-      g_t_ModeAlarme.EcrireValeur(alarme_off);
+      g_t_ModeAlarme = alarme_off;
     }
     break;
 
@@ -204,10 +204,10 @@ void acquerir_afficher()
     g_t_ClignotementLedWS->ReglerLuminosite(64);
     g_t_ClignotementLedWS->SetSequence(2);
 
-    if((g_t_ModeAlarme.LireValeur() != alarme_fin_TempsON)
-        && (g_t_ModeAlarme.LireValeur() != alarme_batterie_faible))
+    if((g_t_ModeAlarme != alarme_fin_TempsON)
+        && (g_t_ModeAlarme != alarme_batterie_faible))
     {
-      g_t_ModeAlarme.EcrireValeur(alarme_off);
+      g_t_ModeAlarme = alarme_off;
     }
     break;
 
@@ -217,9 +217,9 @@ void acquerir_afficher()
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
     {
-      if(g_t_ModeAlarme.LireValeur() != alarme_batterie_faible)
+      if(g_t_ModeAlarme != alarme_batterie_faible)
       {
-        g_t_ModeAlarme.EcrireValeur(alarme_attention);
+        g_t_ModeAlarme = alarme_attention;
       }
     }
     break;
@@ -230,9 +230,9 @@ void acquerir_afficher()
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
     {
-      if(g_t_ModeAlarme.LireValeur() != alarme_batterie_faible)
+      if(g_t_ModeAlarme != alarme_batterie_faible)
       {
-        g_t_ModeAlarme.EcrireValeur(alarme_attention);
+        g_t_ModeAlarme = alarme_attention;
       }
     }
     break;
@@ -243,9 +243,9 @@ void acquerir_afficher()
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
     {
-      if(g_t_ModeAlarme.LireValeur() != alarme_batterie_faible)
+      if(g_t_ModeAlarme != alarme_batterie_faible)
       {
-        g_t_ModeAlarme.EcrireValeur(alarme_alerte);
+        g_t_ModeAlarme = alarme_alerte;
       }
     }
     break;
@@ -326,7 +326,7 @@ uint8_t Tester_Batterie(void)
 
     g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_IndexLED, HTMLColorCode::Red, true);
 
-    g_t_ModeAlarme.EcrireValeur(alarme_batterie_faible);
+    g_t_ModeAlarme = alarme_batterie_faible;
 #endif
     l_u8_NiveauBatterie = 0;
   }
@@ -345,7 +345,7 @@ uint8_t Tester_Batterie(void)
 
     g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_IndexLED, HTMLColorCode::Red, true);
 
-    g_t_ModeAlarme.EcrireValeur(alarme_batterie_faible);
+    g_t_ModeAlarme = alarme_batterie_faible;
   }
   else if(l_u16_TensionBatterieInt < 69)
   {
