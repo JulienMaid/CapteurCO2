@@ -59,9 +59,14 @@ void loop()
 
     Symbole_Mode_En_Cours(g_e_EtatEnEcours);
 
-    l_u8_TempsONRestant = (uint8_t)((g_u32_TempsMaxON - g_u32_TempsEcoule)/(uint32_t)60000)+1;
+    if(g_e_EtatEnEcours == mode_normal)
+    {
+      l_u8_TempsONRestant = (uint8_t)((g_u32_TempsMaxON - g_u32_TempsEcoule)/(uint32_t)60000)+1;
 
-    Afficher_Temps_ON(l_u8_TempsONRestant);
+      Afficher_Temps_ON(l_u8_TempsONRestant);
+    }
+
+
 
     g_t_EcranLCD.display();
   }
