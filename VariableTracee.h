@@ -153,7 +153,7 @@ inline VariableTracee<T>& VariableTracee<T>::operator +(T p_t_Valeur)
 {
   m_t_ValeurInterne += p_t_Valeur;
 
-  return m_t_ValeurInterne;
+  return *this;
 }
 
 template<typename T>
@@ -161,7 +161,7 @@ inline VariableTracee<T>& VariableTracee<T>::operator -(T p_t_Valeur)
 {
   m_t_ValeurInterne -= p_t_Valeur;
 
-  return m_t_ValeurInterne;
+  return *this;
 }
 
 template<typename T>
@@ -169,7 +169,7 @@ inline VariableTracee<T>& VariableTracee<T>::operator *(T p_t_Valeur)
 {
   m_t_ValeurInterne *= p_t_Valeur;
 
-  return m_t_ValeurInterne;
+  return *this;
 }
 
 template<typename T>
@@ -177,16 +177,15 @@ inline VariableTracee<T>& VariableTracee<T>::operator /(T p_t_Valeur)
 {
   m_t_ValeurInterne /= p_t_Valeur;
 
-  return m_t_ValeurInterne;
+  return *this;
 }
 
 template<typename T>
-inline VariableTracee<T>& VariableTracee<T>::operator +(
-    VariableTracee<T> p_t_Valeur)
+inline VariableTracee<T>& VariableTracee<T>::operator +(VariableTracee<T> p_t_Valeur)
 {
   m_t_ValeurInterne += p_t_Valeur.LireValeur();
 
-  return m_t_ValeurInterne;
+  return *this;
 }
 
 template<typename T>
@@ -195,7 +194,7 @@ inline VariableTracee<T>& VariableTracee<T>::operator -(
 {
   m_t_ValeurInterne -= p_t_Valeur.LireValeur();
 
-  return m_t_ValeurInterne;
+  return *this;
 }
 
 template<typename T>
@@ -204,7 +203,7 @@ inline VariableTracee<T>& VariableTracee<T>::operator *(
 {
   m_t_ValeurInterne *= p_t_Valeur.LireValeur();
 
-  return m_t_ValeurInterne;
+  return *this;
 }
 
 template<typename T>
@@ -213,7 +212,7 @@ inline VariableTracee<T>& VariableTracee<T>::operator /(
 {
   m_t_ValeurInterne /= p_t_Valeur.LireValeur();
 
-  return m_t_ValeurInterne;
+  return *this;
 }
 
 template<typename T>
