@@ -21,6 +21,37 @@ public:
 
   void ActiverTracage(bool p_b_Activer);
 
+  VariableTracee<T> &operator=(T p_t_Valeur);
+  VariableTracee<T> &operator+=(T p_t_Valeur);
+  VariableTracee<T> &operator-=(T p_t_Valeur);
+  VariableTracee<T> &operator=(VariableTracee<T> p_t_Valeur);
+  VariableTracee<T> &operator+=(VariableTracee<T> p_t_Valeur);
+  VariableTracee<T> &operator-=(VariableTracee<T> p_t_Valeur);
+
+  VariableTracee<T> &operator+(T p_t_Valeur);
+  VariableTracee<T> &operator-(T p_t_Valeur);
+  VariableTracee<T> &operator*(T p_t_Valeur);
+  VariableTracee<T> &operator/(T p_t_Valeur);
+  VariableTracee<T> &operator+(VariableTracee<T> p_t_Valeur);
+  VariableTracee<T> &operator-(VariableTracee<T> p_t_Valeur);
+  VariableTracee<T> &operator*(VariableTracee<T> p_t_Valeur);
+  VariableTracee<T> &operator/(VariableTracee<T> p_t_Valeur);
+
+  bool operator==(T p_t_Valeur);
+  bool operator!=(T p_t_Valeur);
+  bool operator>(T p_t_Valeur);
+  bool operator>=(T p_t_Valeur);
+  bool operator<(T p_t_Valeur);
+  bool operator<=(T p_t_Valeur);
+  bool operator==(VariableTracee<T> p_t_Valeur);
+  bool operator!=(VariableTracee<T> p_t_Valeur);
+  bool operator>(VariableTracee<T> p_t_Valeur);
+  bool operator>=(VariableTracee<T> p_t_Valeur);
+  bool operator<(VariableTracee<T> p_t_Valeur);
+  bool operator<=(VariableTracee<T> p_t_Valeur);
+
+  operator T() const;
+
 private:
   T m_t_ValeurInterne;
 
@@ -68,4 +99,198 @@ inline void VariableTracee<T>::ActiverTracage(bool p_b_Activer)
   m_b_ActiverTracage = p_b_Activer;
 }
 
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator =(T p_t_Valeur)
+{
+  EcrireValeur(p_t_Valeur);
 
+  return *this;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator =(VariableTracee<T> p_t_Valeur)
+{
+  EcrireValeur(p_t_Valeur.LireValeur());
+
+  return *this;
+}
+
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator +=(T p_t_Valeur)
+{
+  EcrireValeur(m_t_ValeurInterne + p_t_Valeur);
+
+  return *this;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator +=(VariableTracee<T> p_t_Valeur)
+{
+  EcrireValeur(m_t_ValeurInterne + p_t_Valeur.LireValeur());
+
+  return *this;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator -=(T p_t_Valeur)
+{
+  EcrireValeur(m_t_ValeurInterne - p_t_Valeur);
+
+  return *this;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator -=(VariableTracee<T> p_t_Valeur)
+{
+  EcrireValeur(m_t_ValeurInterne - p_t_Valeur.LireValeur());
+
+  return *this;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator +(T p_t_Valeur)
+{
+  m_t_ValeurInterne += p_t_Valeur;
+
+  return m_t_ValeurInterne;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator -(T p_t_Valeur)
+{
+  m_t_ValeurInterne -= p_t_Valeur;
+
+  return m_t_ValeurInterne;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator *(T p_t_Valeur)
+{
+  m_t_ValeurInterne *= p_t_Valeur;
+
+  return m_t_ValeurInterne;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator /(T p_t_Valeur)
+{
+  m_t_ValeurInterne /= p_t_Valeur;
+
+  return m_t_ValeurInterne;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator +(
+    VariableTracee<T> p_t_Valeur)
+{
+  m_t_ValeurInterne += p_t_Valeur.LireValeur();
+
+  return m_t_ValeurInterne;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator -(
+    VariableTracee<T> p_t_Valeur)
+{
+  m_t_ValeurInterne -= p_t_Valeur.LireValeur();
+
+  return m_t_ValeurInterne;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator *(
+    VariableTracee<T> p_t_Valeur)
+{
+  m_t_ValeurInterne *= p_t_Valeur.LireValeur();
+
+  return m_t_ValeurInterne;
+}
+
+template<typename T>
+inline VariableTracee<T>& VariableTracee<T>::operator /(
+    VariableTracee<T> p_t_Valeur)
+{
+  m_t_ValeurInterne /= p_t_Valeur.LireValeur();
+
+  return m_t_ValeurInterne;
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator ==(T p_t_Valeur)
+{
+  return (m_t_ValeurInterne == p_t_Valeur);
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator !=(T p_t_Valeur)
+{
+  return (m_t_ValeurInterne != p_t_Valeur);
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator >(T p_t_Valeur)
+{
+  return (m_t_ValeurInterne > p_t_Valeur);
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator <(T p_t_Valeur)
+{
+  return (m_t_ValeurInterne < p_t_Valeur);
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator >=(T p_t_Valeur)
+{
+  return (m_t_ValeurInterne >= p_t_Valeur);
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator <=(T p_t_Valeur)
+{
+  return (m_t_ValeurInterne <= p_t_Valeur);
+}
+
+
+template<typename T>
+inline bool VariableTracee<T>::operator ==(VariableTracee<T> p_t_Valeur)
+{
+  return (m_t_ValeurInterne == p_t_Valeur.LireValeur());
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator !=(VariableTracee<T> p_t_Valeur)
+{
+  return (m_t_ValeurInterne != p_t_Valeur.LireValeur());
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator >(VariableTracee<T> p_t_Valeur)
+{
+  return (m_t_ValeurInterne > p_t_Valeur.LireValeur());
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator <(VariableTracee<T> p_t_Valeur)
+{
+  return (m_t_ValeurInterne < p_t_Valeur.LireValeur());
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator >=(VariableTracee<T> p_t_Valeur)
+{
+  return (m_t_ValeurInterne >= p_t_Valeur.LireValeur());
+}
+
+template<typename T>
+inline bool VariableTracee<T>::operator <=(VariableTracee<T> p_t_Valeur)
+{
+  return (m_t_ValeurInterne <= p_t_Valeur.LireValeur());
+}
+
+template<typename T>
+inline VariableTracee<T>::operator T() const
+{
+  return m_t_ValeurInterne;
+}
