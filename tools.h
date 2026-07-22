@@ -4,7 +4,7 @@
 
 #define DEBUG 1
 
-typedef enum qualite_air_t
+typedef enum qualite_air_t : uint8_t
 {
   Acceptable = 0,
   Mediocre,
@@ -13,7 +13,7 @@ typedef enum qualite_air_t
   Danger
 } qualite_air_t;
 
-typedef enum mode_operation_t
+typedef enum mode_operation_t : uint8_t
 {
   mode_extinction = 0,
   mode_normal_debut,
@@ -22,7 +22,7 @@ typedef enum mode_operation_t
   mode_stop_alamre,
 } mode_operation_t;
 
-typedef enum mode_alarme_t
+typedef enum mode_alarme_t : uint8_t
 {
   silence = 0,
   alarme_off,
