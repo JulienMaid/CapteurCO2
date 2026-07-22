@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-enum Timer_Type : bool
+enum Timer_Type
 {
   Periodic_Timer = true, One_Shot_Timer = false
 };
