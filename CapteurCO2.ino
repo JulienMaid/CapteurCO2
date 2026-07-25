@@ -10,16 +10,13 @@
 
 #include "gestion_Led_WS.h"
 
-#include "convertAnalogValue.h"
 #include "GestionClignotementLedWS.h"
 
 #include "tools.h"
 #include "VariableTracee.h"
 
-
 GestionLedWS_t * g_t_GestionMultiLedWS;
 GestionClignotementLedWS * g_t_ClignotementLedWS;
-
 
 // définition objet moncapteur
 SCD4x g_t_CapteurSCD41(SCD4x_SENSOR_SCD41);
@@ -30,15 +27,12 @@ Adafruit_SSD1306 g_t_EcranLCD(128,32, &Wire,-1 );//-1 pour signifier qu'aucune  
 TimerEvent_t g_t_TimerTempoMesure;
 TimerEvent_t g_t_TimerGestionGenerale;
 
-
-//ConvertAnalogValue TensionBatterie(0, 0, 0.0, 10.0, 0, 1023);
-
-
 mode_operation_t g_e_EtatEnEcours = mode_extinction;
-VariableTracee<mode_alarme_t> g_t_ModeAlarme(silence, "g_t_ModeAlarme", DEBUG);
+//VariableTracee<mode_operation_t> g_e_EtatEnEcours(mode_extinction, "g_e_EtatEnEcours", true);
+mode_alarme_t g_t_ModeAlarme = silence;
+//VariableTracee<mode_alarme_t> g_t_ModeAlarme(silence, "g_t_ModeAlarme", DEBUG);
 static uint32_t g_u32_TempsEcoule = 0;
 static constexpr uint32_t g_u32_TempsMaxON = 900000;
-
 
 void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg);
 
@@ -213,7 +207,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
   g_u32_TempsEcoule += l_u16_DeltaTemps;
 
 // Gestion alarmes
-  if(g_t_ModeAlarme.LireValeur() == alarme_off)
+  if(g_t_ModeAlarme == alarme_off)
   {
     g_t_ModeAlarme = silence;
     digitalWrite(CMD_BUZZER, 0);

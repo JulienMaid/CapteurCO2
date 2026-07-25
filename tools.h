@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 typedef enum qualite_air_t
 {
