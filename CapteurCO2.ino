@@ -128,6 +128,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
   bool l_b_EtatBP = 0;
   TimerEvent_t * l_pt_TimerGestionBP = (TimerEvent_t *)p_v_arg;
   uint16_t l_u16_DeltaTemps = l_pt_TimerGestionBP->GetValue();
+  static bool l_b_ModeContinuePossible = true;
 
   l_b_EtatBP = digitalRead(ENTREE_BP);
 
@@ -172,6 +173,11 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
     }
 
     l_u16_TempsAppuieBP = 0;
+  }
+
+  if(g_u32_TempsEcoule > 10000)
+  {
+    l_b_ModeContinuePossible = false;
   }
 
   if(g_e_EtatEnEcours != mode_extinction)
