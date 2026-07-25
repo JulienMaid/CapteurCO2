@@ -29,7 +29,7 @@ TimerEvent_t g_t_TimerGestionGenerale;
 
 mode_operation_t g_e_EtatEnEcours = mode_extinction;
 //VariableTracee<mode_operation_t> g_e_EtatEnEcours(mode_extinction, "g_e_EtatEnEcours", true);
-mode_alarme_t g_t_ModeAlarme = silence;
+mode_alarme_t g_e_ModeAlarme = silence;
 //VariableTracee<mode_alarme_t> g_t_ModeAlarme(silence, "g_t_ModeAlarme", DEBUG);
 static uint32_t g_u32_TempsEcoule = 0;
 static constexpr uint32_t g_u32_TempsMaxON = 900000;
@@ -162,7 +162,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
     if((l_u16_TempsAppuieBP > 100) && (l_u16_TempsAppuieBP < 1000))
     {
       // Couper Alarme si ON
-      g_t_ModeAlarme = alarme_off;
+      g_e_ModeAlarme = alarme_off;
 
       // Remettre 15 min de temps ON si mode normal
       if(g_e_EtatEnEcours == mode_normal)
@@ -182,7 +182,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
 
   if(g_e_EtatEnEcours != mode_extinction)
   {
-    if(l_u16_TempsAppuieBP > 2000)
+    if((l_u16_TempsAppuieBP > 2000) && (l_b_ModeContinuePossible == true))
     {
       g_e_EtatEnEcours = mode_continu;
     }
@@ -206,25 +206,25 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       // Si Mode normal, alarme pour prévenir extinction prochain.
       if(g_e_EtatEnEcours == mode_normal)
       {
-        g_t_ModeAlarme = alarme_fin_TempsON;
+        g_e_ModeAlarme = alarme_fin_TempsON;
       }
     }
   }
   g_u32_TempsEcoule += l_u16_DeltaTemps;
 
 // Gestion alarmes
-  if(g_t_ModeAlarme == alarme_off)
+  if(g_e_ModeAlarme == alarme_off)
   {
-    g_t_ModeAlarme = silence;
+    g_e_ModeAlarme = silence;
     digitalWrite(CMD_BUZZER, 0);
   }
-  else if(g_t_ModeAlarme != silence)
+  else if(g_e_ModeAlarme != silence)
   {
     static uint8_t Temps100ms = 0;
 
     Temps100ms ^= 1; // passe à zero toutes les 100ms
 
-    switch(g_t_ModeAlarme)
+    switch(g_e_ModeAlarme)
     {
     case alarme_fin_TempsON:
     case alarme_attention:
