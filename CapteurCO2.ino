@@ -105,7 +105,7 @@ void setup()
   g_t_EcranLCD.display();
 
   // Initialisation capteur SCD41
-  g_t_CapteurSCD41.begin(Wire, true, false);
+  g_t_CapteurSCD41.begin();
 
   g_t_TimerTempoMesure.Init(NULL, 5000);
   g_t_TimerTempoMesure.Start();
