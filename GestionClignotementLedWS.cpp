@@ -47,6 +47,9 @@ uint32_t GestionClignotementLedWS::GetSequence(void)
   case 3:
     l_u32_returnedValue = HTMLColorCode::Red;
     break;
+  case 4:
+    l_u32_returnedValue = HTMLColorCode::Blue;
+    break;
   default:
     l_u32_returnedValue = HTMLColorCode::Black;
     break;
@@ -91,6 +94,12 @@ void GestionClignotementLedWS::SetSequence(uint8_t p_u8_NumeroSequence)
 
   switch(p_u8_NumeroSequence)
   {
+  case 0:
+    l_tu8_LedSequence[0] = 4;
+    l_tu8_LedSequence[3] = 4;
+    l_tu8_LedSequence[6] = 4;
+    l_tu8_LedSequence[9] = 4;
+    break;
   case 1:
     l_tu8_LedSequence[0] = 1;
     break;

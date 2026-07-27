@@ -191,7 +191,15 @@ void acquerir_afficher()
   {
   case Acceptable:
     g_t_ClignotementLedWS->ReglerLuminosite(64);
-    g_t_ClignotementLedWS->SetSequence(1);
+
+    if(taux_co2 != 0)
+    {
+      g_t_ClignotementLedWS->SetSequence(1);
+    }
+    else
+    {
+      g_t_ClignotementLedWS->SetSequence(0);
+    }
 
     if((g_e_ModeAlarme != alarme_fin_TempsON)
         && (g_e_ModeAlarme != alarme_batterie_faible))
