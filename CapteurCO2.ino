@@ -60,13 +60,10 @@ void loop()
       Afficher_Temps_ON(l_u8_TempsONRestant);
     }
 
-
-
     g_t_EcranLCD.display();
   }
 
   Machine_Etat_Generale();
-
 }
 
 void setup()
@@ -217,6 +214,22 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
   {
     g_e_ModeAlarme = silence;
     digitalWrite(CMD_BUZZER, 0);
+
+    g_t_GestionMultiLedWS->ReglerLuminosite(64);
+
+    uint8_t l_u8_numLed = 0;
+
+    if(g_e_EtatEnEcours == mode_continu)
+    {
+      l_u8_numLed = 0;
+    }
+    else
+    {
+      l_u8_numLed = 1;
+    }
+
+    g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::Black, true);
+
   }
   else if(g_e_ModeAlarme != silence)
   {
@@ -230,6 +243,19 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
     case alarme_attention:
       static uint8_t Temps1s=10;
 
+
+      uint8_t l_u8_numLed = 0;
+      g_t_GestionMultiLedWS->ReglerLuminosite(255);
+
+      if(g_e_EtatEnEcours == mode_continu)
+      {
+        l_u8_numLed = 0;
+      }
+      else
+      {
+        l_u8_numLed = 1;
+      }
+
       if(Temps100ms == 0)
       {
         Temps1s -= 1;
@@ -238,11 +264,13 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
         {
           Temps1s = 10;
           digitalWrite(CMD_BUZZER, 1);
+          g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::Red, true);
         }
       }
       else
       {
         digitalWrite(CMD_BUZZER, 0);
+        g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::Black, true);
       }
 
       break;
@@ -250,6 +278,8 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
     case alarme_batterie_faible:
       static uint8_t Temps500ms=5;
       static bool l_b_ValeurBuzzer = 0;
+
+      g_t_GestionMultiLedWS->ReglerLuminosite(255);
 
       if(Temps100ms == 0)
       {
@@ -261,6 +291,26 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
 
           l_b_ValeurBuzzer ^= 1;
           digitalWrite(CMD_BUZZER, l_b_ValeurBuzzer);
+
+          uint8_t l_u8_numLed = 0;
+
+          if(g_e_EtatEnEcours == mode_continu)
+          {
+            l_u8_numLed = 0;
+          }
+          else
+          {
+            l_u8_numLed = 1;
+          }
+
+          if(l_b_ValeurBuzzer == true)
+          {
+            g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::Red, true);
+          }
+          else
+          {
+            g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::Black, true);
+          }
         }
       }
 

@@ -233,7 +233,7 @@ void acquerir_afficher()
     break;
 
   case Tres_Mauvaise:
-    g_t_ClignotementLedWS->ReglerLuminosite(200);
+    g_t_ClignotementLedWS->ReglerLuminosite(255);
     g_t_ClignotementLedWS->SetSequence(4);
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
@@ -246,7 +246,7 @@ void acquerir_afficher()
     break;
 
   case Danger:
-    g_t_ClignotementLedWS->ReglerLuminosite(200);
+    g_t_ClignotementLedWS->ReglerLuminosite(255);
     g_t_ClignotementLedWS->SetSequence(5);
 
     if(l_e_Qualite_Air_Prec != l_e_Qualite_Air)
