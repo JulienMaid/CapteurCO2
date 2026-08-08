@@ -198,7 +198,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
       // Si Mode normal, extinction car allumé depuis 15min.
         g_e_EtatEnEcours = mode_extinction;
     }
-    else if(g_u32_TempsEcoule > (g_u32_TempsMaxON-60000))
+    else if(g_u32_TempsEcoule > (g_u32_TempsMaxON-120000))
     {
       // Si Mode normal, alarme pour prévenir extinction prochain.
       if(g_e_EtatEnEcours == mode_normal)
@@ -264,13 +264,13 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
         {
           Temps1s = 10;
           digitalWrite(CMD_BUZZER, 1);
-          g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::Red, true);
+          g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::White, true);
         }
       }
       else
       {
         digitalWrite(CMD_BUZZER, 0);
-        g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::Black, true);
+        g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::Red, true);
       }
 
       break;
@@ -309,7 +309,7 @@ void GestionTimningGeneral(uint32_t p_u32_arg, void* p_v_arg)
           }
           else
           {
-            g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::Black, true);
+            g_t_GestionMultiLedWS->Nouvelle_Valeur(l_u8_numLed, HTMLColorCode::White, true);
           }
         }
       }
